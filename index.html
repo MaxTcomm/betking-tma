@@ -10,85 +10,205 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             padding: 15px;
             margin: 0;
-            color: var(--tg-theme-text-color, #000000); /* Колір тексту з теми Telegram */
-            background-color: var(--tg-theme-bg-color, #ffffff); /* Колір фону з теми Telegram */
-            overflow: hidden; /* Запобігає зайвій прокрутці */
+            color: var(--tg-theme-text-color, #000000);
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            overflow-x: hidden; /* Важливо для уникнення горизонтальної прокрутки */
         }
         .container {
             text-align: center;
         }
-        h1 {
+        h1, h2 {
             color: var(--tg-theme-text-color, #000000);
+        }
+        h1 {
             font-size: 24px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 15px;
         }
         p {
             font-size: 16px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
-        button {
-            padding: 10px 20px;
+        button, .odds-button, .stake-button {
+            padding: 10px 15px;
             font-size: 16px;
-            color: var(--tg-theme-button-text-color, #ffffff); /* Колір тексту кнопки з теми */
-            background-color: var(--tg-theme-button-color, #007bff); /* Колір кнопки з теми */
+            color: var(--tg-theme-button-text-color, #ffffff);
+            background-color: var(--tg-theme-button-color, #007bff);
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            margin: 5px;
+            min-width: 80px; /* Мінімальна ширина для кнопок коефіцієнтів */
+        }
+        .odds-button.selected {
+            background-color: var(--tg-theme-secondary-bg-color, #5ac8fa); /* Колір для вибраної кнопки */
+            color: var(--tg-theme-text-color, #000000); /* Колір тексту для вибраної кнопки, якщо фон світлий */
+        }
+        .stake-options, .bet-confirmation {
+            margin-top: 15px;
+        }
+        .hidden {
+            display: none;
         }
         #userInfo {
             margin-top: 20px;
+            font-size: 12px;
+            color: var(--tg-theme-hint-color, #999999);
+            word-break: break-all;
+            padding-bottom: 20px; /* Додатковий відступ знизу */
+        }
+        .match-info {
+            padding: 10px;
+            border: 1px solid var(--tg-theme-hint-color, #dddddd);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background-color: var(--tg-theme-secondary-bg-color, #f8f8f8);
+        }
+        .teams {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .match-date {
             font-size: 14px;
-            word-break: break-all; /* Для довгих рядків даних користувача */
+            color: var(--tg-theme-hint-color, #777777);
+            margin-bottom: 10px;
+        }
+        .odds-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Вітаємо у BetKing!</h1>
-        <p>Це початкова версія нашого міні-додатку для ставок на спорт.</p>
-        <button id="testButton">Показати Alert</button>
+        <h1>Міні-Додаток BetKing</h1>
+
+        <div id="matchOfTheDaySection">
+            <h2>Матч дня</h2>
+            <div class="match-info">
+                <div id="matchTeams" class="teams"></div>
+                <div id="matchDate" class="match-date"></div>
+                <div id="oddsContainer" class="odds-container">
+                    </div>
+            </div>
+            <div id="stakeOptions" class="stake-options hidden">
+                <p>Оберіть суму ставки:</p>
+                <button class="stake-button" data-amount="100">100 грн</button>
+                <button class="stake-button" data-amount="200">200 грн</button>
+                <button class="stake-button" data-amount="500">500 грн</button>
+            </div>
+            <div id="betConfirmation" class="bet-confirmation"></div>
+        </div>
+
+        <hr style="margin-top: 30px; margin-bottom:10px; border-color: var(--tg-theme-hint-color, #dddddd);">
         <div id="userInfo"></div>
-    </div>
+        </div>
 
     <script>
-        // Ініціалізуємо Telegram Web App API
         const tg = window.Telegram.WebApp;
-        tg.ready(); // Повідомляємо Telegram, що додаток готовий
+        tg.ready();
+        tg.expand();
 
-        // Налаштовуємо колір хедера під тему (якщо можливо)
         if (tg.themeParams.secondary_bg_color) {
             tg.setHeaderColor(tg.themeParams.secondary_bg_color);
         } else if (tg.themeParams.bg_color) {
              tg.setHeaderColor(tg.themeParams.bg_color);
         }
 
+        // --- Дані для Матчу дня (поки що статичні) ---
+        const matchOfTheDayData = {
+            team1: "Динамо Київ",
+            team2: "Шахтар Донецьк",
+            date: "12 Травня 2025, 19:00", // Дата актуальна на момент вашого запиту
+            odds: {
+                p1: { name: "П1", value: 2.50, description: "Перемога Динамо Київ" },
+                x:  { name: "X", value: 3.20, description: "Нічия" },
+                p2: { name: "П2", value: 2.80, description: "Перемога Шахтар Донецьк" }
+            }
+        };
 
+        let selectedOdd = null; // Для збереження обраного коефіцієнту
+
+        // --- Елементи DOM ---
+        const matchTeamsEl = document.getElementById('matchTeams');
+        const matchDateEl = document.getElementById('matchDate');
+        const oddsContainerEl = document.getElementById('oddsContainer');
+        const stakeOptionsEl = document.getElementById('stakeOptions');
+        const betConfirmationEl = document.getElementById('betConfirmation');
         const userInfoDiv = document.getElementById('userInfo');
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const user = tg.initDataUnsafe.user;
-            let userInfoText = `Привіт, ${user.first_name || ''} ${user.last_name || ''}!`;
-            userInfoText += `<br>Твій ID: ${user.id}`;
-            userInfoText += `<br>Юзернейм: @${user.username || 'не вказано'}`;
-            userInfoText += `<br>Мова: ${user.language_code || 'не вказано'}`;
-            userInfoDiv.innerHTML = userInfoText;
-        } else {
-            userInfoDiv.textContent = "Не вдалося отримати дані користувача Telegram. Можливо, сторінка відкрита не всередині Telegram.";
+
+        // --- Функція для відображення Матчу дня ---
+        function displayMatchOfTheDay() {
+            matchTeamsEl.textContent = `${matchOfTheDayData.team1} - ${matchOfTheDayData.team2}`;
+            matchDateEl.textContent = matchOfTheDayData.date;
+
+            oddsContainerEl.innerHTML = ''; // Очищуємо попередні коефіцієнти
+            for (const key in matchOfTheDayData.odds) {
+                const odd = matchOfTheDayData.odds[key];
+                const button = document.createElement('button');
+                button.className = 'odds-button';
+                button.dataset.key = key; // Зберігаємо ключ коефіцієнту (p1, x, p2)
+                button.innerHTML = `<span class="math-inline">\{odd\.name\}<br\></span>{odd.value.toFixed(2)}`;
+                button.addEventListener('click', handleOddSelection);
+                oddsContainerEl.appendChild(button);
+            }
         }
 
-        const testButton = document.getElementById('testButton');
-        testButton.addEventListener('click', function() {
-            tg.showAlert('Це тестове повідомлення від міні-додатку BetKing!');
+        // --- Обробка вибору коефіцієнту ---
+        function handleOddSelection(event) {
+            // Знімаємо виділення з усіх кнопок коефіцієнтів
+            document.querySelectorAll('.odds-button').forEach(btn => btn.classList.remove('selected'));
+
+            const selectedButton = event.currentTarget;
+            selectedButton.classList.add('selected');
+
+            const oddKey = selectedButton.dataset.key;
+            selectedOdd = matchOfTheDayData.odds[oddKey];
+
+            stakeOptionsEl.classList.remove('hidden'); // Показуємо опції для ставки
+            betConfirmationEl.textContent = ''; // Очищуємо попереднє підтвердження
+        }
+
+        // --- Обробка вибору суми ставки ---
+        document.querySelectorAll('.stake-button').forEach(button => {
+            button.addEventListener('click', function() {
+                if (!selectedOdd) {
+                    tg.showAlert('Будь ласка, спочатку оберіть результат матчу!');
+                    return;
+                }
+                const amount = parseInt(this.dataset.amount);
+                const potentialWin = (amount * selectedOdd.value).toFixed(2);
+
+                const confirmationMessage = `Вашу ставку на "<span class="math-inline">\{selectedOdd\.description\}" \(</span>{selectedOdd.name} @${selectedOdd.value.toFixed(2)}) на суму ${amount} грн прийнято (MVP).\nМожливий виграш: ${potentialWin} грн.`;
+
+                betConfirmationEl.textContent = confirmationMessage;
+                // tg.showAlert(confirmationMessage); // Можна використовувати alert або текстове поле
+
+                // Для MVP, скидаємо вибір, щоб можна було зробити "нову" ставку
+                stakeOptionsEl.classList.add('hidden');
+                document.querySelectorAll('.odds-button').forEach(btn => btn.classList.remove('selected'));
+                selectedOdd = null;
+                tg.HapticFeedback.notificationOccurred('success'); // Вібровідгук
+            });
         });
 
-        // Приклад використання головної кнопки Telegram (MainButton)
-        // tg.MainButton.setText("Закрити додаток");
-        // tg.MainButton.show();
-        // tg.MainButton.onClick(function() {
-        //     tg.close();
-        // });
+        // --- Відображення інформації про користувача ---
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            let userInfoText = `Користувач: ${user.first_name || ''} <span class="math-inline">\{user\.last\_name \|\| ''\} \(@</span>{user.username || 'N/A'}, ID: ${user.id})`;
+            userInfoDiv.innerHTML = userInfoText;
+        } else {
+            userInfoDiv.textContent = "Дані користувача Telegram недоступні.";
+        }
 
-        // Розширюємо додаток на весь екран
-        tg.expand();
+        // --- Ініціалізація ---
+        displayMatchOfTheDay();
 
     </script>
 </body>
