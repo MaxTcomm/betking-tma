@@ -1,298 +1,511 @@
 /* css/style.css */
 
-/* Змінні для кольорів (можна налаштувати) */
 :root {
-    --primary-bg: #1C1C1E; /* Темний фон, як у VisionOS */
-    --secondary-bg-glass: rgba(50, 50, 52, 0.7); /* Напівпрозорий для "скла" */
-    --tertiary-bg-glass: rgba(70, 70, 72, 0.6); /* Ще один варіант скла */
-    --text-color-primary: #F2F2F7; /* Світлий основний текст */
-    --text-color-secondary: #AEAEB2; /* Другорядний текст */
-    --accent-yellow: #FFE433;
-    --telegram-button-color: var(--tg-theme-button-color, #0A84FF); /* Синхронізація з Telegram */
-    --telegram-button-text-color: var(--tg-theme-button-text-color, #FFFFFF);
-    --telegram-link-color: var(--tg-theme-link-color, #0A84FF);
-    --telegram-hint-color: var(--tg-theme-hint-color, #8E8E93);
+    /* Кольори */
+    --app-bg-color: #000000;
+    --text-primary-color: #FFFFFF;
+    --text-secondary-color: rgba(255, 255, 255, 0.70);
+    --text-dark-color: #000000; /* Для тексту на світлому фоні */
+    --accent-yellow-color: #FFE433;
+
+    --header-item-bg-color: rgba(255, 255, 255, 0.07);
+    --header-item-border-color: rgba(255, 255, 255, 0.20);
+
+    --nav-inactive-tab-bg-color: rgba(255, 255, 255, 0.16);
+    --nav-active-tab-bg-color: #FFFFFF;
+    
+    --button-primary-bg-color: #FFFFFF; /* Для кнопок коефіцієнтів, сум */
+    --button-secondary-bg-color: transparent; /* Для кнопки "Використати Фрібет" */
+    --button-secondary-border-color: rgba(255, 255, 255, 0.30);
+
+    --message-block-bg-color: rgba(7, 172, 255, 0.14); /* Синій відтінок для повідомлень */
+    --message-block-border-color: rgba(7, 172, 255, 0.10);
+
+    /* Шрифти */
     --font-family-main: 'Geologica', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    --border-radius-main: 12px; /* Більш округлі кути */
-    --border-radius-small: 8px;
-    --blur-effect: saturate(180%) blur(10px); /* Ефект розмиття для скла */
+    
+    /* Радіуси округлення */
+    --border-radius-oval: 9999px; /* Для повністю овальних кнопок */
+    --border-radius-main: 12px;   /* Для кнопок та блоків */
+
+    /* Відступи */
+    --gap-buttons: 8px;
+    --gap-internal-button: 4px;
+    --padding-button-coeffs: 12px 6px;
+    --padding-button-deposit: 22px 25px;
+    --padding-nav-tab: 12px 8px;
+    --padding-message-block: 12px;
+
+    /* Анімації */
+    --transition-duration: 0.2s;
+    --transition-timing-function: ease-in-out;
 }
 
 body {
     font-family: var(--font-family-main);
     padding: 0;
     margin: 0;
-    color: var(--text-color-primary);
-    background-color: var(--primary-bg);
+    color: var(--text-primary-color);
+    background-color: var(--app-bg-color);
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    -webkit-font-smoothing: antialiased; /* Покращення рендерингу шрифтів */
+    -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* --- Хедер --- */
 .main-header {
-    padding: 12px 15px;
-    background-color: var(--secondary-bg-glass);
-    backdrop-filter: var(--blur-effect);
-    -webkit-backdrop-filter: var(--blur-effect);
-    border-bottom: 1px solid rgba(142, 142, 147, 0.3); /* Напівпрозора рамка */
-    text-align: center;
-    position: sticky; /* Можна зробити хедер "липким" */
-    top: 0;
-    z-index: 100;
+    padding: 10px 15px; /* Загальний padding для хедера */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch; /* Відповідь користувача */
+    /* background-color: var(--tg-theme-secondary-bg-color); */ /* Якщо потрібен фон для всього хедера */
+    /* border-bottom: 1px solid var(--header-item-border-color); */
+}
+
+.balance-info {
+    text-align: left; /* Текст балансів зліва */
 }
 
 .balance-info p {
-    margin: 3px 0;
-    font-size: 13px;
-    color: var(--text-color-secondary);
-    font-weight: 400;
+    margin: 2px 0;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    line-height: 18px; /* 128.571% */
+    color: var(--text-primary-color); 
+    font-weight: 200; /* Для лейблів "Основний баланс:", "Бонусний:", "Фрібет:" */
 }
 
-.balance-info strong {
-    color: var(--text-color-primary);
+.balance-info strong { /* Для сум */
     font-weight: 500;
 }
 
+.deposit-button-container { /* Обгортка для кнопки Депозит, щоб вона була справа */
+    /* Поки не потрібна, якщо main-header вже flex */
+}
+
+#depositButton { /* ID для кнопки Депозит, якщо потрібно стилізувати окремо, або клас */
+    display: flex;
+    padding: var(--padding-button-deposit);
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap-internal-button);
+    border-radius: var(--border-radius-oval);
+    border: 0.5px solid var(--header-item-border-color);
+    background: var(--header-item-bg-color);
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 200;
+    line-height: 18px; /* 128.571% */
+    cursor: pointer;
+    transition: background-color var(--transition-duration) var(--transition-timing-function);
+}
+#depositButton:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+
+/* --- Навігація (Таби) --- */
 nav {
     display: flex;
     justify-content: space-around;
-    padding: 8px 8px; /* Зменшив вертикальний padding */
-    background-color: var(--secondary-bg-glass);
-    backdrop-filter: var(--blur-effect);
-    -webkit-backdrop-filter: var(--blur-effect);
-    border-bottom: 1px solid rgba(142, 142, 147, 0.3);
-    position: sticky; /* Можна зробити навігацію "липкою" під хедером */
-    top: 50px; /* Висота хедера (приблизно) */
-    z-index: 99;
+    padding: 0; /* Забираємо padding з nav, відступи будуть у кнопок і контейнера */
+    margin-top: 16px;
+    margin-bottom: 32px;
+    margin-left: 15px; /* Відступи, щоб таби не прилягали до країв */
+    margin-right: 15px;
+    gap: var(--gap-buttons); /* Відступ між табами */
 }
 
 nav button.nav-button {
-    flex-grow: 1;
-    padding: 10px 5px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-color-secondary);
-    background-color: transparent; /* Прозорий фон для неактивних */
-    border: none;
-    border-radius: var(--border-radius-small);
-    cursor: pointer;
-    margin: 0 4px;
-    opacity: 0.8;
-    transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
-}
-
-nav button.nav-button:hover {
-    color: var(--text-color-primary);
-    background-color: rgba(255, 255, 255, 0.1); /* Легке підсвічування при наведенні */
-    opacity: 1;
-}
-
-nav button.nav-button.active {
-    color: var(--primary-bg); /* Темний текст на жовтому */
-    background-color: var(--accent-yellow);
-    opacity: 1;
-    border-bottom: none; /* Прибираємо попереднє підкреслення */
-    box-shadow: 0 2px 10px rgba(255, 228, 51, 0.3); /* Тінь для активної вкладки */
-}
-
-.page-content {
-    padding: 20px 15px; /* Збільшив відступи */
-    flex-grow: 1;
-    position: relative;
-}
-
-h2 {
-    font-size: 22px; /* Трохи більший заголовок */
-    font-weight: 700; /* Жирніший */
-    margin-top: 15px;
-    margin-bottom: 20px;
-    text-align: center;
-    color: var(--text-color-primary);
-}
-
-p {
-    font-size: 16px;
-    line-height: 1.6; /* Покращена читабельність */
-    margin-bottom: 12px;
-    color: var(--text-color-secondary);
-}
-
-/* Стилізація кнопок */
-button, .odds-button, .stake-button, .action-button, .prediction-button {
-    padding: 12px 20px; /* Збільшив padding */
-    font-size: 16px;
-    font-weight: 500; /* Середня жирність */
-    color: var(--text-color-primary); /* Світлий текст */
-    background-color: var(--tertiary-bg-glass); /* Скляний фон */
-    backdrop-filter: var(--blur-effect);
-    -webkit-backdrop-filter: var(--blur-effect);
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Ледь помітна рамка */
-    border-radius: var(--border-radius-main);
-    cursor: pointer;
-    margin: 8px 5px; /* Збільшив відступи */
-    min-width: 90px;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* М'яка тінь */
-}
-
-button:hover, .odds-button:hover, .stake-button:hover, .action-button:hover, .prediction-button:hover {
-    background-color: rgba(90, 90, 92, 0.8); /* Трохи світліше при наведенні */
-    transform: translateY(-1px); /* Легкий підйом */
-}
-button:active, .odds-button:active, .stake-button:active, .action-button:active, .prediction-button:active {
-    transform: translateY(0px);
-    background-color: rgba(100, 100, 102, 0.9);
-}
-
-
-.odds-button.selected, .prediction-button.selected {
-    background-color: var(--accent-yellow);
-    color: var(--primary-bg); /* Темний текст на жовтому */
-    border-color: var(--accent-yellow);
-    box-shadow: 0 4px 15px rgba(255, 228, 51, 0.4);
-}
-
-.prediction-button:disabled {
-    background-color: rgba(70, 70, 72, 0.4); /* Темніше та менш прозоре для заблокованих */
-    backdrop-filter: none; /* Можна прибрати блюр для заблокованих */
-    color: var(--text-color-secondary);
-    cursor: not-allowed;
-    opacity: 0.6;
-    box-shadow: none;
-}
-
-.stake-options, .bet-confirmation, .prediction-result {
-    margin-top: 20px;
-    min-height: 40px;
-    text-align: center;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.user-info-footer {
-    padding: 15px;
-    text-align: center;
-    font-size: 13px; /* Трохи більший */
-    font-weight: 400;
-    color: var(--text-color-secondary);
-    word-break: break-all;
-    border-top: 1px solid rgba(142, 142, 147, 0.3);
-    margin-top: auto;
-    background-color: var(--secondary-bg-glass); /* Також скляний */
-    backdrop-filter: var(--blur-effect);
-    -webkit-backdrop-filter: var(--blur-effect);
-}
-
-.section-block {
-    padding: 20px; /* Збільшив padding */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius-main); /* Більш округлі кути */
-    margin-bottom: 25px;
-    background-color: var(--secondary-bg-glass);
-    backdrop-filter: var(--blur-effect);
-    -webkit-backdrop-filter: var(--blur-effect);
-    text-align: center;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25); /* Виразніша тінь */
-}
-
-.teams, .express-title, .daily-match-title {
-    font-size: 20px; /* Збільшив */
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: var(--text-color-primary);
-}
-
-.match-date, .express-total-odds, .streak-info, .rewards-info {
-    font-size: 15px; /* Збільшив */
-    color: var(--text-color-secondary);
-    margin-bottom: 15px;
-}
-
-.rewards-info {
-    font-style: italic;
-    font-weight: 300;
-}
-
-.odds-container, .prediction-options {
     display: flex;
-    justify-content: space-around;
+    padding: var(--padding-nav-tab);
+    justify-content: center;
     align-items: center;
-    margin-bottom: 15px;
-    flex-wrap: wrap; /* Дозволяє переносити кнопки, якщо не вміщаються */
+    gap: 10px; /* Як вказано */
+    flex: 1 0 0; /* Розтягуються однаково */
+    border-radius: var(--border-radius-oval);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 200; /* Застосовуємо для всіх станів, колір буде різний */
+    line-height: 18px; /* 128.571% */
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--transition-duration) var(--transition-timing-function), color var(--transition-duration) var(--transition-timing-function);
 }
 
-.express-selections {
+nav button.nav-button:not(.active) { /* Неактивний таб */
+    background: var(--nav-inactive-tab-bg-color);
+    color: var(--text-primary-color); /* Білий текст */
+}
+nav button.nav-button:not(.active):hover {
+    background: rgba(255, 255, 255, 0.25); 
+}
+
+nav button.nav-button.active { /* Активний таб */
+    background: var(--nav-active-tab-bg-color);
+    color: var(--text-dark-color); /* Чорний текст */
+    /* font-weight тут вже заданий 200, як ви вказали */
+}
+
+/* --- Загальний контейнер сторінки --- */
+.page-content {
+    padding: 0 15px 15px 15px; /* Відступи для контенту сторінок, верхній вже є від табів */
+    flex-grow: 1;
+    position: relative; 
+}
+
+/* --- Загальні стилі для елементів на сторінках --- */
+.page-title-date { /* Для "Матч дня • [дата]" */
+    color: var(--text-secondary-color);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 200;
+    line-height: 18px; /* 128.571% */
+    text-align: center;
+    margin-top: 0; /* Скидаємо margin-top, бо є відступ від табів */
+    margin-bottom: 2px; /* Відступ до назв команд */
+}
+.page-title-date + .teams { /* Відступ для назв команд, якщо є заголовок з датою */
+     margin-top: 2px;
+}
+
+
+.teams { /* Для "Динамо Київ - Шахтар Донецьк" */
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 32px; /* 160% */
+    text-align: center;
+    margin-bottom: 24px; /* Відступ до блоку коефіцієнтів */
+}
+
+.section-block { /* Обгортка для коефіцієнтів, подій експресу тощо */
+    /* background-color, border, border-radius - не потрібні, бо кнопки самі мають фон */
+    padding: 0; /* Скидаємо, бо кнопки/елементи мають свої відступи */
+    margin-bottom: 24px; /* Відступ між основними блоками */
+    text-align: center;
+}
+
+/* Кнопки коефіцієнтів та сум */
+.odds-container,
+.stake-options- суммы { /* Новий клас для обгортки кнопок сум */
+    display: flex;
+    justify-content: center; /* Або space-between, якщо потрібно розтягнути */
+    gap: var(--gap-buttons);
+    margin-bottom: 24px; /* Відступ після блоку кнопок */
+}
+
+.odds-button, /* П1, Х, П2 */
+.stake-button.motd-stake, /* 100, 200, 500 */
+.stake-button.eotd-stake { /* 100, 200, 500 для експресу */
+    display: flex;
+    padding: var(--padding-button-coeffs);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap-internal-button);
+    flex: 1 0 0; /* Розтягуються однаково */
+    border-radius: var(--border-radius-main);
+    background: var(--button-primary-bg-color); /* Білий фон */
+    cursor: pointer;
+    transition: background-color var(--transition-duration) var(--transition-timing-function), transform var(--transition-duration) var(--transition-timing-function);
+}
+.odds-button:hover, .stake-button:hover {
+    transform: scale(1.03); /* Невелике збільшення при наведенні */
+}
+
+
+.odds-button .odd-name, /* "П1" */
+.stake-button .stake-amount-text { /* "100 грн" - можливо, потрібно буде додати span в HTML */
+    align-self: stretch;
+    color: var(--text-dark-color);
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 16px; /* 114.286% */
+}
+
+.odds-button .odd-value, /* "2.50" */
+.stake-button .stake-amount-value { /* Якщо сума буде окремим елементом */
+    align-self: stretch;
+    color: var(--text-dark-color);
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px; /* 122.222% */
+}
+/* Текст для кнопок сум, якщо він єдиний елемент */
+.stake-button { 
+    color: var(--text-dark-color);
+    font-family: var(--font-family-main);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 22px;
+}
+
+
+.odds-button.selected { /* Вибраний коефіцієнт */
+    background: var(--accent-yellow-color);
+}
+.odds-button.selected .odd-name,
+.odds-button.selected .odd-value {
+    color: var(--text-dark-color); /* Залишаємо чорним */
+}
+
+/* Блок вибору суми ставки (заголовок) */
+.stake-options > p { /* "Обери суму ставки..." */
+    color: var(--text-secondary-color);
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 22px; /* 137.5% */
+    margin-bottom: 16px; /* Відступ до кнопок сум */
+}
+
+/* Кнопка "Використати Фрібет" */
+.freebet-button-container { /* Обгортка для кнопки фрібету */
+    margin-bottom: 24px; /* Відступ після кнопки */
+}
+#motdFreebetButton, #eotdFreebetButton { /* Клас або ID для кнопки фрібету */
+    display: flex;
+    height: 46px; /* Як вказано */
+    padding: var(--padding-button-coeffs); /* Використовуємо той самий, що й для коеф. */
+    flex-direction: column; /* Щоб текст був по центру, якщо він короткий */
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap-internal-button);
+    align-self: stretch; /* Розтягується на всю ширину батьківського контейнера */
+    border-radius: var(--border-radius-main);
+    border: 1px solid var(--button-secondary-border-color);
+    background: var(--button-secondary-bg-color); /* Прозорий */
+    color: var(--text-primary-color);
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px; /* 122.222% */
+    cursor: pointer;
+    width: 100%; /* Щоб займала всю доступну ширину */
+    box-sizing: border-box; /* Щоб padding і border не збільшували загальну ширину */
+    transition: background-color var(--transition-duration) var(--transition-timing-function);
+}
+#motdFreebetButton:hover, #eotdFreebetButton:hover {
+    background: rgba(255, 255, 255, 0.05); /* Ледь помітний фон при наведенні */
+}
+
+
+/* Повідомлення про зроблену ставку */
+.bet-confirmation .info-message,
+.prediction-result .info-message {
+    /* display: flex; - вже є в info-message, якщо потрібно */
+    /* width: 353px; - краще не задавати фіксовану ширину, а дати розтягуватися */
+    max-width: 353px; /* Обмеження максимальної ширини */
+    margin-left: auto; /* Центрування блоку, якщо він вужчий */
+    margin-right: auto; /* Центрування блоку */
+    padding: var(--padding-message-block);
+    flex-direction: column;
+    align-items: center; /* текст вже по центру */
+    gap: var(--gap-internal-button);
+    border-radius: var(--border-radius-main);
+    border: 1px solid var(--message-block-border-color);
+    background: var(--message-block-bg-color);
+}
+
+.bet-confirmation .message-title, /* "Матч дня: Ставка Фрібетом..." */
+.prediction-result .message-title {
+    color: var(--text-primary-color);
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px; /* 137.5% */
+}
+
+.bet-confirmation .message-details, /* "Твою ставку на..." */
+.prediction-result .message-details {
+    color: var(--text-primary-color);
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 200;
+    line-height: 22px; /* 137.5% */
+}
+
+
+/* --- Сторінка Експрес дня --- */
+.express-title { /* "Супер Експрес на Вихідні!" */
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 20px; /* Як назви команд */
+    font-weight: 500;
+    line-height: 32px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.express-selections { /* Список подій в експресі */
     list-style: none;
-    padding-left: 0;
+    padding: 15px; /* Внутрішні відступи */
+    margin: 0 auto 15px auto; /* Центрування та відступи */
+    max-width: 353px; /* Обмеження ширини */
+    background-color: rgba(255, 255, 255, 0.05); /* Дуже легкий фон для блоку */
+    border-radius: var(--border-radius-main);
     text-align: left;
-    font-size: 15px; /* Збільшив */
-    margin-bottom: 15px;
-    background-color: var(--tertiary-bg-glass); /* Скло для списку */
-    backdrop-filter: var(--blur-effect);
-    -webkit-backdrop-filter: var(--blur-effect);
-    padding: 15px;
-    border-radius: var(--border-radius-small);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-weight: 300; /* Зробимо текст подій легшим */
+    line-height: 1.6;
 }
 
 .express-selections li {
-    padding: 10px 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Світліший розділювач */
-    color: var(--text-color-primary);
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary-color);
 }
-
 .express-selections li:last-child {
     border-bottom: none;
 }
 
-/* Оновлені стилі для інформаційних повідомлень */
-.info-message {
-    padding: 15px;
-    margin-top: 20px;
-    border-radius: var(--border-radius-small);
-    font-size: 15px;
-    border: 1px solid transparent;
+.express-total-odds { /* "Загальний коефіцієнт: X.XX" */
+    color: var(--text-primary-color); /* Зробимо його білим для важливості */
+    font-family: var(--font-family-main);
+    font-size: 16px; /* Трохи більший */
+    font-weight: 500; /* Жирніший */
+    line-height: 22px;
     text-align: center;
-    line-height: 1.6;
-    color: var(--text-color-primary); /* Світлий текст для всіх повідомлень */
+    margin-bottom: 20px;
 }
 
-.info-message.success {
-    background-color: rgba(48, 209, 88, 0.2); /* Напівпрозорий зелений */
-    border-color: rgba(48, 209, 88, 0.4); /* Зелений */
-    box-shadow: 0 2px 10px rgba(48, 209, 88, 0.2);
-}
-
-.info-message.notice {
-    background-color: rgba(255, 214, 10, 0.2); /* Напівпрозорий жовтий (не наш акцентний) */
-    border-color: rgba(255, 214, 10, 0.4);
-    box-shadow: 0 2px 10px rgba(255, 214, 10, 0.2);
-}
-.info-message.error {
-    background-color: rgba(255, 69, 58, 0.2); /* Напівпрозорий червоний */
-    border-color: rgba(255, 69, 58, 0.4);
-    box-shadow: 0 2px 10px rgba(255, 69, 58, 0.2);
+#acceptExpressButton { /* Кнопка "Поставити на цей Експрес" */
+    /* Загальні стилі кнопок вже застосовані */
+    /* Можна зробити її особливою, наприклад, жовтою */
+    background-color: var(--accent-yellow-color);
+    color: var(--text-dark-color);
+    width: 100%;
+    max-width: 353px; /* Обмеження ширини */
+    margin-left: auto;
+    margin-right: auto;
+    display: block; /* Щоб margin auto працював для центрування */
+    box-sizing: border-box;
 }
 
 
-/* Loader styles */
+/* --- Сторінка Щоденний Прогноз --- */
+.streak-info, .rewards-info {
+    color: var(--text-secondary-color);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 300; /* Легший шрифт */
+    line-height: 18px;
+    text-align: center;
+}
+.streak-info { margin-bottom: 4px; }
+.rewards-info { margin-bottom: 20px; font-style: italic; }
+.streak-info #currentStreak {
+    color: var(--accent-yellow-color); /* Жовтий для стріка */
+    font-weight: 500;
+}
+
+.daily-match-title { /* "Матч на сьогодні: ..." */
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 16px; /* Як заголовок блоку ставок */
+    font-weight: 300;
+    line-height: 22px;
+    text-align: center;
+    margin-bottom: 8px;
+}
+.daily-match-title #dailyMatchTeams {
+    font-weight: 500; /* Назви команд жирніші */
+}
+
+.prediction-options { /* Контейнер для кнопок П1, Х, П2 для прогнозу */
+    display: flex;
+    justify-content: center;
+    gap: var(--gap-buttons);
+    margin-bottom: 20px;
+}
+
+.prediction-button { /* Кнопки П1, Х, П2 для прогнозу */
+    /* Використовують ті ж стилі, що й .odds-button */
+    display: flex;
+    padding: var(--padding-button-coeffs);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap-internal-button);
+    flex: 1 0 0;
+    border-radius: var(--border-radius-main);
+    background: var(--button-primary-bg-color);
+    color: var(--text-dark-color); /* Чорний текст на білому */
+    /* Тут не потрібен поділ на .odd-name та .odd-value, бо там просто "П1" */
+    font-family: var(--font-family-main);
+    font-size: 18px; /* Як значення коефіцієнта */
+    font-weight: 500;
+    line-height: 22px;
+}
+.prediction-button.selected {
+    background: var(--accent-yellow-color);
+    color: var(--text-dark-color);
+}
+.prediction-button:disabled {
+    background: rgba(255, 255, 255, 0.1); /* Темніший фон для заблокованих кнопок прогнозу */
+    color: rgba(255, 255, 255, 0.4);
+    cursor: not-allowed;
+    opacity: 1; /* Щоб не було подвійної прозорості */
+}
+.prediction-button:disabled:hover {
+    transform: none;
+}
+
+
+/* --- Футер --- */
+.user-info-footer {
+    padding: 15px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 300; /* Легший шрифт */
+    color: var(--text-secondary-color);
+    word-break: break-all;
+    border-top: 0.5px solid var(--header-item-border-color); /* Тонка лінія */
+    margin-top: auto; /* Притискає до низу */
+    /* background-color: var(--secondary-bg-glass); */ /* Якщо потрібен фон */
+}
+
+/* --- Індикатор завантаження --- */
 .loader-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: 50px; /* Відступ зверху для лоадера */
+    padding-top: 50px;
 }
 .loader {
-    border: 5px solid rgba(255, 255, 255, 0.2); /* Світліша рамка лоадера */
-    border-top: 5px solid var(--accent-yellow); /* Жовтий для обертання */
+    border: 5px solid rgba(255, 255, 255, 0.2);
+    border-top: 5px solid var(--accent-yellow-color);
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 30px; /* Трохи менший */
+    height: 30px;
     animation: spin 1s linear infinite;
 }
 
@@ -301,8 +514,36 @@ button:active, .odds-button:active, .stake-button:active, .action-button:active,
     100% { transform: rotate(360deg); }
 }
 
-/* Специфічні адаптації для Telegram WebApp */
-body {
-    background-color: var(--tg-theme-bg-color, var(--primary-bg));
-    color: var(--tg-theme-text-color, var(--text-color-primary));
+
+/* Додаткові загальні стилі для інформаційних повідомлень, якщо потрібні */
+.info-message { /* Загальний клас, який я використовував у JS */
+    padding: 12px;
+    margin-top: 20px; /* Відступ зверху */
+    border-radius: var(--border-radius-main); /* Використовуємо головний радіус */
+    font-size: 15px;
+    border: 1px solid transparent;
+    text-align: center;
+    line-height: 1.5;
+    /* max-width та margin auto вже були, але можна повторити для впевненості */
+    max-width: 353px; 
+    margin-left: auto; 
+    margin-right: auto; 
+}
+
+.info-message.success {
+    /* Стилі вже задані, можна трохи підправити під загальну гаму */
+    background-color: rgba(76, 217, 100, 0.15); /* Зелений Apple */
+    border-color: rgba(76, 217, 100, 0.3);
+    color: #FFF; /* Білий текст */
+}
+
+.info-message.notice {
+    background-color: rgba(255, 204, 0, 0.15); /* Жовтий Apple */
+    border-color: rgba(255, 204, 0, 0.3);
+    color: #FFF; /* Білий текст */
+}
+.info-message.error {
+    background-color: rgba(255, 59, 48, 0.15); /* Червоний Apple */
+    border-color: rgba(255, 59, 48, 0.3);
+    color: #FFF; /* Білий текст */
 }
