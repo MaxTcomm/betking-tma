@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>BetKing Міні-Додаток</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 15px;
+            margin: 0;
+            color: var(--tg-theme-text-color, #000000); /* Колір тексту з теми Telegram */
+            background-color: var(--tg-theme-bg-color, #ffffff); /* Колір фону з теми Telegram */
+            overflow: hidden; /* Запобігає зайвій прокрутці */
+        }
+        .container {
+            text-align: center;
+        }
+        h1 {
+            color: var(--tg-theme-text-color, #000000);
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: var(--tg-theme-button-text-color, #ffffff); /* Колір тексту кнопки з теми */
+            background-color: var(--tg-theme-button-color, #007bff); /* Колір кнопки з теми */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        #userInfo {
+            margin-top: 20px;
+            font-size: 14px;
+            word-break: break-all; /* Для довгих рядків даних користувача */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Вітаємо у BetKing!</h1>
+        <p>Це початкова версія нашого міні-додатку для ставок на спорт.</p>
+        <button id="testButton">Показати Alert</button>
+        <div id="userInfo"></div>
+    </div>
+
+    <script>
+        // Ініціалізуємо Telegram Web App API
+        const tg = window.Telegram.WebApp;
+        tg.ready(); // Повідомляємо Telegram, що додаток готовий
+
+        // Налаштовуємо колір хедера під тему (якщо можливо)
+        if (tg.themeParams.secondary_bg_color) {
+            tg.setHeaderColor(tg.themeParams.secondary_bg_color);
+        } else if (tg.themeParams.bg_color) {
+             tg.setHeaderColor(tg.themeParams.bg_color);
+        }
+
+
+        const userInfoDiv = document.getElementById('userInfo');
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            let userInfoText = `Привіт, ${user.first_name || ''} ${user.last_name || ''}!`;
+            userInfoText += `<br>Твій ID: ${user.id}`;
+            userInfoText += `<br>Юзернейм: @${user.username || 'не вказано'}`;
+            userInfoText += `<br>Мова: ${user.language_code || 'не вказано'}`;
+            userInfoDiv.innerHTML = userInfoText;
+        } else {
+            userInfoDiv.textContent = "Не вдалося отримати дані користувача Telegram. Можливо, сторінка відкрита не всередині Telegram.";
+        }
+
+        const testButton = document.getElementById('testButton');
+        testButton.addEventListener('click', function() {
+            tg.showAlert('Це тестове повідомлення від міні-додатку BetKing!');
+        });
+
+        // Приклад використання головної кнопки Telegram (MainButton)
+        // tg.MainButton.setText("Закрити додаток");
+        // tg.MainButton.show();
+        // tg.MainButton.onClick(function() {
+        //     tg.close();
+        // });
+
+        // Розширюємо додаток на весь екран
+        tg.expand();
+
+    </script>
+</body>
+</html>
