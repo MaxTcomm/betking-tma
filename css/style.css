@@ -1,11 +1,12 @@
 /* css/style.css */
 
 :root {
+    /* ... (змінні залишаються ті ж, що й у попередній версії CSS) ... */
     /* Кольори */
     --app-bg-color: #000000;
     --text-primary-color: #FFFFFF;
     --text-secondary-color: rgba(255, 255, 255, 0.70);
-    --text-dark-color: #000000;
+    --text-dark-color: #000000; /* Для тексту на світлому фоні */
     --accent-yellow-color: #FFE433;
 
     --header-deposit-button-bg-color: rgba(255, 255, 255, 0.07);
@@ -26,16 +27,16 @@
     --font-family-main: 'Geologica', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     
     /* Радіуси округлення */
-    --border-radius-oval: 9999px;
-    --border-radius-main: 12px;
+    --border-radius-oval: 9999px; /* Для повністю овальних кнопок */
+    --border-radius-main: 12px;   /* Для кнопок та блоків */
 
     /* Відступи */
     --gap-buttons: 8px; /* Відступ між кнопками коеф. та сум */
     --gap-internal-button: 4px; /* Відступ всередині кнопки (напр. Депозит +) */
     
     /* Розміри кнопок/елементів (padding) */
-    --padding-button-deposit: 12px 20px; /* Змінено з макета, щоб кнопка не була надто високою */
-    --padding-nav-tab: 10px 8px; /* Зменшено для вужчих табів */
+    --padding-button-deposit: 10px 20px; /* Зменшив padding, щоб висота визначалась контентом */
+    --padding-nav-tab: 10px 8px; 
     --padding-button-coeffs: 12px 6px;
     --padding-message-block: 12px;
 
@@ -45,7 +46,8 @@
     --transition-timing-function: ease-in-out;
 }
 
-body { /* ... (без змін з попередньої версії) ... */ }
+
+body { /* ... (без змін) ... */ }
 body {
     font-family: var(--font-family-main);
     padding: 0;
@@ -55,31 +57,29 @@ body {
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh; /* Важливо для притискання футера */
 }
 
 
 /* --- Хедер --- */
 .main-header {
-    padding: 16px 15px; /* Збільшив вертикальний padding для відповідності макету */
+    padding: 16px 15px; 
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Вертикальне вирівнювання по центру */
-    /* align-self: stretch; - не потрібен, хедер розтягується по ширині */
+    align-items: center; /* Вирівнює по центру вертикально */
 }
 
 .balance-info {
     text-align: left;
+    /* Висота цього блоку буде визначати висоту кнопки "Депозит" */
 }
 
 .balance-info p {
-    margin: 1px 0; /* Зменшив вертикальні відступи між рядками балансу */
+    margin: 1px 0; 
     font-family: var(--font-family-main);
     font-size: 14px;
     font-style: normal;
-    line-height: 18px; /* 128.571% */
+    line-height: 18px; 
     color: var(--text-primary-color); 
     font-weight: 200;
 }
@@ -89,12 +89,16 @@ body {
 }
 
 .deposit-button-container {
-    /* Для вирівнювання кнопки по правому краю, якщо потрібно буде додаткове обгортання */
+   /* Можемо використовувати align-self: stretch; якщо .main-header має фіксовану висоту,
+      або кнопка сама розтягнеться, якщо .main-header align-items: stretch (за замовчуванням) */
 }
 
 #depositButton {
     display: flex;
-    padding: var(--padding-button-deposit);
+    padding: var(--padding-button-deposit); /* Padding визначає розмір */
+    /* height: 100%; - НЕ РОБИТИ, нехай висота визначається контентом і align-items в .main-header */
+    /* min-height: X px - якщо є мінімальна бажана висота */
+    box-sizing: border-box; /* Щоб padding не збільшував задану висоту, якщо вона буде */
     justify-content: center;
     align-items: center;
     gap: var(--gap-internal-button);
@@ -109,7 +113,7 @@ body {
     line-height: 18px;
     cursor: pointer;
     transition: background-color var(--transition-duration) var(--transition-timing-function);
-    white-space: nowrap; /* Щоб текст не переносився */
+    white-space: nowrap; 
 }
 #depositButton:hover {
     background: rgba(255, 255, 255, 0.12);
@@ -119,13 +123,12 @@ body {
 /* --- Навігація (Таби) --- */
 nav {
     display: flex;
-    /* justify-content: space-around; - забираємо, бо gap = 0 */
     padding: 0; 
     margin-top: 16px;
     margin-bottom: 32px;
     margin-left: 15px; 
     margin-right: 15px;
-    /* gap: 0; - кнопки будуть прилягати, якщо їх батьківський flex не має space-around */
+    /* gap: 0; - кнопки будуть прилягати, якщо в них немає margin */
 }
 
 nav button.nav-button {
@@ -133,24 +136,22 @@ nav button.nav-button {
     padding: var(--padding-nav-tab);
     justify-content: center;
     align-items: center;
-    /* gap: 10px; - не потрібен, якщо текст короткий */
     flex: 1 0 0; 
-    border-radius: var(--border-radius-oval); /* Як на макеті */
+    border-radius: var(--border-radius-oval); 
     font-family: var(--font-family-main);
-    font-size: 14px; /* Як у кнопки Депозит та тексту балансів */
+    font-size: 14px; 
     font-style: normal;
     line-height: 18px; 
     border: none;
     cursor: pointer;
     transition: background-color var(--transition-duration) var(--transition-timing-function), color var(--transition-duration) var(--transition-timing-function);
-    margin: 0; /* Відстань між табами нуль */
-    /* Щоб кнопки виглядали меншими, можна обмежити їх max-width або flex-basis */
+    margin: 0; /* Щоб кнопки прилягали одна до одної */
 }
 
 nav button.nav-button:not(.active) { 
     background: var(--nav-inactive-tab-bg-color);
-    color: var(--text-primary-color); /* Білий текст */
-    font-weight: 200; /* Як ви вказали для активного, застосуємо і сюди */
+    color: var(--text-primary-color); 
+    font-weight: 200; 
 }
 nav button.nav-button:not(.active):hover {
     background: rgba(255, 255, 255, 0.25); 
@@ -158,20 +159,18 @@ nav button.nav-button:not(.active):hover {
 
 nav button.nav-button.active { 
     background: var(--nav-active-tab-bg-color);
-    color: var(--text-dark-color); /* Чорний текст */
-    font-weight: 200; /* Як ви вказали */
+    color: var(--text-dark-color); 
+    font-weight: 200; 
 }
 
-
-.page-content { /* ... (без змін) ... */ }
+/* --- Page Content & Common Page Elements --- */
 .page-content {
     padding: 0 15px 15px 15px;
     flex-grow: 1;
     position: relative; 
 }
 
-
-/* --- Заголовки та текст на сторінках --- */
+.page-title-date { /* ... (без змін) ... */ }
 .page-title-date { 
     color: var(--text-secondary-color);
     font-family: var(--font-family-main);
@@ -180,10 +179,10 @@ nav button.nav-button.active {
     font-weight: 200;
     line-height: 18px; 
     text-align: center;
-    /* margin-top: 0; - приберемо, відступ буде від nav */
     margin-bottom: 2px; 
 }
 
+.teams { /* ... (без змін) ... */ }
 .teams { 
     color: var(--text-primary-color);
     font-family: var(--font-family-main);
@@ -192,26 +191,30 @@ nav button.nav-button.active {
     font-weight: 500;
     line-height: 32px; 
     text-align: center;
-    margin-top: 2px; /* Відступ від page-title-date */
+    margin-top: 2px; 
     margin-bottom: 24px; 
 }
 
 .section-block { /* ... (без змін) ... */ }
-.section-block {
+.section-block { 
     padding: 0; 
     margin-bottom: 24px; 
     text-align: center;
 }
 
 
-/* Кнопки коефіцієнтів та сум */
+/* --- Кнопки коефіцієнтів та сум --- */
 .odds-container,
-.stake-options-суммы { 
+.stake-options-суммы { /* Клас для обгортки кнопок сум */
     display: flex;
     justify-content: center; 
-    gap: var(--gap-buttons);
-    margin-bottom: 24px; 
+    gap: var(--gap-buttons); /* 8px */
+    /* margin-bottom: 24px; - Забираємо, бо наступний елемент матиме свій margin-top */
 }
+.odds-container {
+    margin-bottom: 24px; /* Залишаємо відступ після коефіцієнтів */
+}
+
 
 .odds-button, 
 .stake-button.motd-stake, 
@@ -221,19 +224,20 @@ nav button.nav-button.active {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: var(--gap-internal-button);
+    gap: var(--gap-internal-button); /* 4px */
     flex: 1 0 0; 
     border-radius: var(--border-radius-main);
     background: var(--button-coeffs-bg-color); 
     cursor: pointer;
     transition: background-color var(--transition-duration) var(--transition-timing-function), transform var(--transition-duration) var(--transition-timing-function);
-    border: none; /* Прибираємо бордер */
+    border: none; /* Прибрали бордер */
 }
 .odds-button:hover, .stake-button.motd-stake:hover, .stake-button.eotd-stake:hover {
-    transform: scale(1.03); 
+    /* transform: scale(1.03); - Анімацію збільшення залишаємо, якщо подобається */
 }
 
 
+.odds-button .odd-name { /* ... (без змін) ... */ }
 .odds-button .odd-name { 
     align-self: stretch;
     color: var(--text-dark-color);
@@ -245,6 +249,7 @@ nav button.nav-button.active {
     line-height: 16px; 
 }
 
+.odds-button .odd-value { /* ... (без змін) ... */ }
 .odds-button .odd-value { 
     align-self: stretch;
     color: var(--text-dark-color);
@@ -256,7 +261,8 @@ nav button.nav-button.active {
     line-height: 22px; 
 }
 
-.stake-button.motd-stake, .stake-button.eotd-stake { /* Стиль для тексту кнопок сум */
+.stake-button.motd-stake, .stake-button.eotd-stake { /* ... (без змін) ... */ }
+.stake-button.motd-stake, .stake-button.eotd-stake { 
     color: var(--text-dark-color);
     font-family: var(--font-family-main);
     font-size: 18px;
@@ -265,14 +271,14 @@ nav button.nav-button.active {
 }
 
 
+.odds-button.selected { /* ... (без змін) ... */ }
 .odds-button.selected { 
     background: var(--accent-yellow-color);
 }
-/* Текст для .selected залишається чорним, як визначено для .odd-name та .odd-value */
 
 
 /* Блок вибору суми ставки (заголовок) */
-#motdStakeOptionsArea > p, #eotdStakeOptionsArea > p { /* Звертаємось до <p> всередині */
+#motdStakeOptionsArea > p, #eotdStakeOptionsArea > p { 
     color: var(--text-secondary-color);
     text-align: center;
     font-family: var(--font-family-main);
@@ -281,11 +287,13 @@ nav button.nav-button.active {
     font-weight: 300;
     line-height: 22px; 
     margin-bottom: 16px; 
+    /* За замовчуванням буде прихований через JS */
 }
 
 /* Кнопка "Використати Фрібет" */
 .freebet-button-container { 
-    margin-bottom: 24px; 
+    /* margin-bottom: 24px; - Забираємо, бо це останній елемент перед підтвердженням */
+    margin-top: var(--gap-buttons); /* 8px, як між кнопками сум */
 }
 #motdFreebetButton, #eotdFreebetButton { 
     display: flex;
@@ -295,10 +303,10 @@ nav button.nav-button.active {
     justify-content: center;
     align-items: center;
     gap: var(--gap-internal-button);
-    align-self: stretch; 
+    /* align-self: stretch; - не потрібен, якщо width: 100% */
     border-radius: var(--border-radius-main);
     border: 1px solid var(--button-freebet-border-color);
-    background: var(--button-freebet-bg-color); /* Прозорий */
+    background: var(--button-freebet-bg-color); 
     color: var(--text-primary-color);
     text-align: center;
     font-family: var(--font-family-main);
@@ -317,28 +325,21 @@ nav button.nav-button.active {
 
 
 /* Повідомлення про зроблену ставку */
-.bet-confirmation .info-message,
-.prediction-result .info-message {
+.bet-confirmation .info-message.bet-placed-style, /* Застосовуємо саме до цього типу */
+.prediction-result .info-message.bet-placed-style { /* І для аналогічного в прогнозах */
     max-width: 353px; 
     margin-left: auto; 
     margin-right: auto; 
     padding: var(--padding-message-block);
-    /* flex-direction: column; */ /* Забираємо, бо текст сам центрується */
-    /* align-items: center; */ 
     gap: var(--gap-internal-button);
     border-radius: var(--border-radius-main); /* 12px */
-    /* Стилі для фону та рамки тепер специфічні для типу повідомлення */
-}
-
-/* Специфічний стиль для повідомлення про ставку (блакитний) */
-.bet-confirmation .info-message.bet-placed-style,
-.prediction-result .info-message.bet-placed-style { /* Додаємо клас для цього стилю */
     border: 1px solid var(--message-bet-placed-border-color);
     background: var(--message-bet-placed-bg-color);
+    /* Текст всередині вже має свої стилі .message-title та .message-details */
 }
 
-
-.message-title { /* "Матч дня: Ставка Фрібетом..." */
+.message-title { /* ... (без змін) ... */ }
+.message-title { 
     color: var(--text-primary-color);
     text-align: center;
     font-family: var(--font-family-main);
@@ -348,7 +349,8 @@ nav button.nav-button.active {
     line-height: 22px; 
 }
 
-.message-details { /* "Твою ставку на..." */
+.message-details { /* ... (без змін) ... */ }
+.message-details { 
     color: var(--text-primary-color);
     text-align: center;
     font-family: var(--font-family-main);
@@ -359,36 +361,55 @@ nav button.nav-button.active {
 }
 
 
-/* ... (стилі для Експрес дня, Щоденного прогнозу, Футера, Лоадера залишаються як у попередньому великому CSS файлі, але з врахуванням змін вище) ... */
-/* Я їх скорочую тут, але вони мають бути у вашому файлі css/style.css */
-
-/* --- Сторінка Експрес дня --- */
-.express-title { /* ... */ }
-.express-selections { /* ... */ }
-.express-selections li { /* ... */ }
-.express-total-odds { /* ... */ }
-#acceptExpressButton { /* ... */ }
-
-/* --- Сторінка Щоденний Прогноз --- */
-.streak-info, .rewards-info { /* ... */ }
-.streak-info #currentStreak { /* ... */ }
-.daily-match-title { /* ... */ }
-.daily-match-title #dailyMatchTeams { /* ... */ }
-.prediction-options { /* ... */ }
-.prediction-button { /* ... */ }
-.prediction-button.selected { /* ... */ }
-.prediction-button:disabled { /* ... */ }
-
 /* --- Футер --- */
-.user-info-footer { /* ... */ }
+.user-info-footer {
+    padding: 10px 15px; /* Зменшив padding зверху/знизу */
+    text-align: center;
+    font-size: 12px;
+    font-weight: 300; 
+    color: var(--text-secondary-color);
+    word-break: break-all;
+    /* border-top: 0.5px solid var(--header-item-border-color); - прибираємо, якщо він не потрібен */
+    /* margin-top: auto; - не потрібен, якщо body flex column і page-content flex-grow */
+    /* position: fixed; /* Можна спробувати так, якщо потрібно прибити до низу */
+    /* bottom: 0; */
+    /* left: 0; */
+    /* right: 0; */
+    /* padding-bottom: env(safe-area-inset-bottom, 15px); /* Для iOS Home Indicator */
+    /* Але для простоти, давайте поки що так: */
+    margin-bottom: 36px; /* Відступ від нижнього краю */
+    width: 100%;
+    box-sizing: border-box;
+}
 
-/* --- Індикатор завантаження --- */
-.loader-container { /* ... */ }
-.loader { /* ... */ }
-@keyframes spin { /* ... */ }
+
+/* ... (Решта стилів для Експрес дня, Щоденного прогнозу, Лоадера, загальних .info-message залишаються як у попередній версії CSS, але з урахуванням нових змінних та підходів, наприклад, до кнопок) ... */
+/* Я їх скорочую тут, але вони мають бути у вашому файлі css/style.css */
+/* Важливо: для .express-selections, .daily-match-title і т.д. використовуйте аналогічні принципи відступів і шрифтів. */
+
+/* Loader styles */
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px; 
+}
+.loader {
+    border: 5px solid rgba(255, 255, 255, 0.2); 
+    border-top: 5px solid var(--accent-yellow-color); 
+    border-radius: 50%;
+    width: 30px; 
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 
 /* Загальні стилі для інформаційних повідомлень (успіх, попередження, помилка) */
-/* Ці стилі застосовуються, якщо не вказано більш специфічний .bet-placed-style */
 .info-message { 
     padding: 12px;
     margin-top: 20px; 
