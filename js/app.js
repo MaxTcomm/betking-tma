@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     tg.ready();
     tg.expand();
 
-    // Налаштування кольору хедера Telegram
     if (tg.themeParams.secondary_bg_color) {
         tg.setHeaderColor(tg.themeParams.secondary_bg_color);
     } else if (tg.themeParams.bg_color) {
@@ -16,29 +15,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInfoFooter = document.getElementById('user-info-footer');
     const initialLoaderHTML = '<div class="loader-container"><div class="loader"></div></div>';
 
-    // Глобальна змінна для confetti, щоб інші скрипти мали до неї доступ
+    // --- Управління балансами ---
+    window.currentBalances = { // Робимо глобальним для доступу з інших скриптів
+        main: 1500.00,
+        bonus: 250.50,
+        freebets: 3
+    };
+
+    const mainBalanceDisplayEl = document.getElementById('mainBalanceDisplay');
+    const bonusBalanceDisplayEl = document.getElementById('bonusBalanceDisplay');
+    const freebetsDisplayEl = document.getElementById('freebetsDisplay');
+
+    window.updateBalanceDisplay = function() {
+        if (mainBalanceDisplayEl) mainBalanceDisplayEl.textContent = window.currentBalances.main.toFixed(2);
+        if (bonusBalanceDisplayEl) bonusBalanceDisplayEl.textContent = window.currentBalances.bonus.toFixed(2);
+        if (freebetsDisplayEl) freebetsDisplayEl.textContent = window.currentBalances.freebets;
+    }
+    // Ініціалізація відображення балансів при першому завантаженні
+    window.updateBalanceDisplay(); 
+    // ---------------------------
+
+
     window.confetti = null; 
     const confettiScript = document.createElement('script');
     confettiScript.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js';
-    confettiScript.onload = () => {
-        // console.log('Confetti library loaded and assigned to window.confetti');
-        // Тепер window.confetti доступна глобально
-    };
+    confettiScript.onload = () => { /* console.log('Confetti loaded'); */ };
     confettiScript.onerror = () => console.error('Failed to load confetti library.');
     document.head.appendChild(confettiScript);
     
-    // Глобальні утиліти
+    window.getFormattedDate = function(date) { /* ... (код без змін) ... */ };
+    window.TODAY_STRING = window.getFormattedDate(new Date());
+    // Копіюємо тіло функції getFormattedDate
     window.getFormattedDate = function(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     }
-    window.TODAY_STRING = window.getFormattedDate(new Date());
-
 
     async function loadPage(pageUrl, targetNavButtonId) {
-        pageContentArea.innerHTML = initialLoaderHTML; // Показати лоадер
+        // ... (код функції loadPage без змін, як у попередньому кроці)
+        pageContentArea.innerHTML = initialLoaderHTML; 
 
         try {
             const response = await fetch(pageUrl);
@@ -46,9 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`Failed to load page ${pageUrl}: ${response.status}`);
             }
             const html = await response.text();
-            pageContentArea.innerHTML = html; // Вставити вміст сторінки
+            pageContentArea.innerHTML = html; 
 
-            // Визначити, який скрипт завантажити на основі URL сторінки
             let scriptSrc = null;
             if (pageUrl.includes('match-of-the-day.html')) {
                 scriptSrc = 'js/motd.js';
@@ -59,21 +75,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (scriptSrc) {
-                // Видаляємо старий скрипт сторінки, якщо він був
                 const oldScript = document.getElementById('pageSpecificScript');
                 if (oldScript) {
                     oldScript.remove();
                 }
-                // Завантажуємо новий скрипт
                 const pageScript = document.createElement('script');
-                pageScript.id = 'pageSpecificScript'; // ID для можливого видалення
+                pageScript.id = 'pageSpecificScript'; 
                 pageScript.src = scriptSrc;
-                pageScript.type = 'text/javascript'; // Можна не вказувати для сучасних браузерів
-                pageScript.onload = () => {
-                    // console.log(`${scriptSrc} loaded and executed.`);
-                };
+                pageScript.type = 'text/javascript'; 
+                pageScript.onload = () => { /* console.log(`${scriptSrc} loaded`); */ };
                 pageScript.onerror = () => console.error(`Failed to load script: ${scriptSrc}`);
-                document.body.appendChild(pageScript); // Додаємо в кінець body
+                document.body.appendChild(pageScript); 
             }
 
             setActiveNavButton(targetNavButtonId);
@@ -86,17 +98,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function setActiveNavButton(activeButtonId) { /* ... (код без змін) ... */ }
+    // Копіюємо тіло функції setActiveNavButton
     function setActiveNavButton(activeButtonId) {
         navButtons.forEach(button => {
             button.classList.toggle('active', button.id === activeButtonId);
         });
     }
 
+
+    navButtons.forEach(button => { /* ... (код без змін) ... */ });
+    // Копіюємо тіло обробника для navButtons
     navButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             const pageUrl = e.currentTarget.dataset.page;
             const navId = e.currentTarget.id;
-            if (pageUrl) { // Перевірка, чи є URL
+            if (pageUrl) { 
                  loadPage(pageUrl, navId);
             } else {
                 console.warn('Nav button is missing data-page attribute or its value is empty:', e.currentTarget);
@@ -104,15 +121,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Відображення інформації про користувача
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) { /* ... (код без змін) ... */ }
+    // Копіюємо тіло для userInfoFooter
+     if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
         const user = tg.initDataUnsafe.user;
         userInfoFooter.innerHTML = `Користувач: ${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'N/A'}, ID: ${user.id})`;
     } else {
         userInfoFooter.textContent = "Дані користувача Telegram недоступні.";
     }
 
-    // Завантаження початкової сторінки
     const lastActivePageUrl = localStorage.getItem('betkingActivePageUrl') || 'pages/match-of-the-day.html';
     const lastActiveNavId = localStorage.getItem('betkingActiveNavId') || 'navMotd';
     loadPage(lastActivePageUrl, lastActiveNavId);
