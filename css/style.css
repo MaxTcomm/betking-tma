@@ -437,3 +437,229 @@ nav button.nav-button.active {
     border-color: rgba(255, 59, 48, 0.3);
     color: #FFF; 
 }
+/* === Доповнення для сторінки "Експрес дня" === */
+
+/* Заголовок сторінки Експрес дня (якщо він відрізняється від .page-title-date) */
+#eotdPageTitle { /* Якщо ви вирішите використовувати окремий елемент для заголовка */
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 32px; /* 160% */
+    text-align: center; /* Центрування, як на макеті */
+    margin-top: 0; /* Якщо це перший елемент після навігації */
+    margin-bottom: 16px;
+}
+#eotdPageTitle .date-part { /* Для дати в заголовку */
+    /* Стилі для дати, якщо вони такі ж, як для тексту заголовка, цей клас не потрібен */
+    /* Якщо відрізняються, наприклад: */
+    /* font-weight: 200; */
+    /* color: var(--text-secondary-color); */
+}
+
+
+/* Контейнер для списку карточок експресу */
+.express-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Відступ між карточками */
+    margin-bottom: 16px; /* Відступ після списку карточок */
+}
+
+/* Стилі для окремої карточки матчу в експресі */
+.express-match-card {
+    display: flex;
+    padding: 16px 12px;
+    flex-direction: column; /* Основний напрямок для текстових блоків */
+    align-items: stretch;  /* Розтягуємо текстові блоки по ширині */
+    gap: 2px; /* Мінімальний відступ між текстовими рядками */
+    align-self: stretch;
+    border-radius: 12px;
+    border: 0.5px solid rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.07);
+    position: relative; /* Для позиціонування кнопки видалення */
+    overflow: hidden; /* Для анімації висоти */
+    transition: opacity var(--transition-duration) var(--transition-timing-function),
+                max-height var(--transition-duration) var(--transition-timing-function),
+                padding var(--transition-duration) var(--transition-timing-function),
+                margin var(--transition-duration) var(--transition-timing-function);
+}
+
+/* Стиль для карточки під час анімації видалення */
+.express-match-card.removing {
+    opacity: 0;
+    max-height: 0 !important; /* Важливо для перекриття */
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    border-width: 0 !important; /* Щоб рамка теж зникла */
+    overflow: hidden;
+}
+
+
+.express-match-card .card-row { /* Обгортка для рядка з командами та кнопкою видалення */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 4px; /* Додатковий відступ для цього рядка */
+}
+
+.express-match-card .match-teams { /* Рядок 1: "Динамо Київ VS Шахтар Донецьк" */
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300; /* Згідно зі специфікацією */
+    line-height: 22px; /* 137.5% */
+    flex-grow: 1; /* Щоб займав доступне місце */
+}
+
+.express-match-card .delete-match-button {
+    background: transparent;
+    border: none;
+    color: #FF4E33; /* Колір хрестика */
+    font-family: var(--font-family-main); /* Або спеціальний шрифт для іконок */
+    font-size: 18px; /* Розмір хрестика */
+    font-weight: bold; /* Щоб хрестик був чіткішим */
+    line-height: 1; /* Для кращого вертикального вирівнювання */
+    padding: 4px; /* Відступи навколо хрестика для збільшення області кліку */
+    margin-left: 8px; /* Відступ від тексту команд */
+    cursor: pointer;
+    border-radius: 50%; /* Можна зробити круглою область кліку */
+    width: 26px; /* 18px + 4px*2 */
+    height: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color var(--transition-duration) var(--transition-timing-function);
+}
+.express-match-card .delete-match-button:hover {
+    background-color: rgba(255, 78, 51, 0.1); /* Легкий фон при наведенні */
+}
+
+
+.express-match-card .match-datetime { /* Рядок 2: "12 червня 2025 • 19:00" */
+    color: rgba(255, 255, 255, 0.70);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 200;
+    line-height: 18px; /* 128.571% */
+}
+
+.express-match-card .market-name { /* Рядок 3: "1X2 - Підвищені коефіцієнти" */
+    color: var(--text-primary-color); /* Білий, як ви вказали */
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 22px; /* 137.5% */
+}
+
+.express-match-card .selected-outcome-details { /* Рядок 4 */
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    align-self: stretch; /* Розтягуємо по ширині карточки */
+}
+
+.express-match-card .outcome-name { /* "Динамо Київ" */
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 22px; /* 137.5% */
+}
+
+.express-match-card .odds-arrow {
+    /* Для SVG або символу стрілки */
+    color: #11FF11; /* Ваш яскраво-зелений */
+    font-size: 14px; /* Або розмір SVG */
+    /* Якщо це символ, наприклад ▲: */
+    /* line-height: 1; */
+}
+/* Приклад SVG стрілки, якщо будете використовувати: */
+/* .express-match-card .odds-arrow svg { fill: #11FF11; width: 12px; height: 12px; } */
+
+
+.express-match-card .outcome-odds { /* "1.59" */
+    color: #11FF11; /* Ваш яскраво-зелений */
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300; /* Як для назви команди */
+    line-height: 22px; /* 137.5% */
+}
+
+/* Блок підсумкової інформації */
+.express-summary-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Текст вирівнюється по лівому краю */
+    gap: 4px;
+    align-self: stretch; /* Розтягується по ширині контейнера */
+    margin-top: 16px;
+    margin-bottom: 16px;
+    padding: 0 12px; /* Додав невеликий горизонтальний padding, щоб текст не прилягав до країв, якщо батьківський блок без padding */
+}
+
+.express-summary-block .summary-line {
+    display: flex; /* Для розміщення лейблу і значення в один рядок */
+    justify-content: space-between; /* Розносимо по краях */
+    width: 100%;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    line-height: 18px; /* 128.571% */
+}
+
+.express-summary-block .summary-label {
+    color: var(--text-primary-color); /* Замість світло-сірого, як на макеті */
+    font-weight: 200;
+}
+
+.express-summary-block .summary-value {
+    color: var(--text-primary-color);
+    font-weight: 500;
+}
+
+/* Стилі для #acceptExpressButton вже мають бути в основному файлі, 
+   але переконаємося, що він відповідає макету (жовтий, на всю ширину) */
+#acceptExpressButton {
+    background-color: var(--accent-yellow-color) !important; /* Важливо, щоб перекрити загальний стиль кнопки */
+    color: var(--text-dark-color) !important;
+    width: 100%;
+    max-width: 100%; /* Забираємо обмеження, щоб був на всю ширину батьківського блоку */
+    display: block;
+    box-sizing: border-box;
+    margin-top: 8px; /* Додав невеликий відступ зверху */
+}
+/* Обгортка для кнопки "Поставити на експрес" */
+.accept-express-button-container {
+    margin-bottom: 24px; /* Відступ до блоку вибору суми ставки */
+}
+
+
+/* Перевизначення для .section-block, якщо він використовується як обгортка для кнопки "Поставити на експрес" */
+.section-block.accept-button-wrapper {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+}
+
+
+/* Стилі для #eotdStakeTitle (заголовок "Обери суму ставки...") */
+#eotdStakeOptionsArea > #eotdStakeTitle { 
+    color: var(--text-secondary-color);
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 22px; 
+    margin-bottom: 16px; 
+}
