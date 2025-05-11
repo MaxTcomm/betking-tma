@@ -4,30 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>BetKing Міні-Додаток</title>
-    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@200;300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-    </head>
+</head>
 <body>
     <header class="main-header">
         <div class="balance-info">
-            <p>Баланс: <strong id="mainBalanceDisplay">1500.00</strong> грн</p>
-            <p>Бонуси: <strong id="bonusBalanceDisplay">250.50</strong> грн</p>
-            <p>Фрібети: <strong id="freebetsDisplay">3</strong> шт.</p>
+            <p>Основний баланс: <strong id="mainBalanceDisplay">1500.00</strong> ₴</p>
+            <p>Бонусний: <strong id="bonusBalanceDisplay">250.50</strong> ₴</p>
+            <p>Фрібет: <strong id="freebetsDisplay">1</strong> шт. (250.00 ₴)</p> </div>
+        <div class="deposit-button-container"> <button id="depositButton" type="button">Депозит +</button>
         </div>
     </header>
 
     <nav>
         <button data-page="pages/match-of-the-day.html" id="navMotd" class="nav-button">Матч дня</button>
         <button data-page="pages/express-of-the-day.html" id="navEotd" class="nav-button">Експрес дня</button>
-        <button data-page="pages/daily-login.html" id="navDaily" class="nav-button">Щоденний Прогноз</button>
-    </nav>
+        <button data-page="pages/daily-login.html" id="navDaily" class="nav-button">Прогноз</button> </nav>
 
     <main id="page-content-area" class="page-content">
-        <div class="loader-container"><div class="loader"></div></div> </main>
+        <div class="loader-container"><div class="loader"></div></div>
+    </main>
 
     <footer id="user-info-footer" class="user-info-footer">
         </footer>
