@@ -125,7 +125,7 @@
         const matchOfTheDayData = {
             team1: "Динамо Київ",
             team2: "Шахтар Донецьк",
-            date: "12 Травня 2025, 19:00", // Дата актуальна на момент вашого запиту
+            date: "12 Травня 2025, 19:00",
             odds: {
                 p1: { name: "П1", value: 2.50, description: "Перемога Динамо Київ" },
                 x:  { name: "X", value: 3.20, description: "Нічия" },
@@ -154,7 +154,7 @@
                 const button = document.createElement('button');
                 button.className = 'odds-button';
                 button.dataset.key = key; // Зберігаємо ключ коефіцієнту (p1, x, p2)
-                button.innerHTML = `<span class="math-inline">\{odd\.name\}<br\></span>{odd.value.toFixed(2)}`;
+                button.innerHTML = `${odd.name}<br>${odd.value.toFixed(2)}`;
                 button.addEventListener('click', handleOddSelection);
                 oddsContainerEl.appendChild(button);
             }
@@ -185,10 +185,11 @@
                 const amount = parseInt(this.dataset.amount);
                 const potentialWin = (amount * selectedOdd.value).toFixed(2);
 
-                const confirmationMessage = `Вашу ставку на "<span class="math-inline">\{selectedOdd\.description\}" \(</span>{selectedOdd.name} @${selectedOdd.value.toFixed(2)}) на суму ${amount} грн прийнято (MVP).\nМожливий виграш: ${potentialWin} грн.`;
+                // Ось правильний рядок для формування повідомлення
+                const confirmationMessage = `Вашу ставку на "${selectedOdd.description}" (${selectedOdd.name} @${selectedOdd.value.toFixed(2)}) на суму ${amount} грн прийнято (MVP).\nМожливий виграш: ${potentialWin} грн.`;
 
                 betConfirmationEl.textContent = confirmationMessage;
-                // tg.showAlert(confirmationMessage); // Можна використовувати alert або текстове поле
+                // tg.showAlert(confirmationMessage); // Альтернатива - показати через Telegram Alert
 
                 // Для MVP, скидаємо вибір, щоб можна було зробити "нову" ставку
                 stakeOptionsEl.classList.add('hidden');
@@ -201,7 +202,7 @@
         // --- Відображення інформації про користувача ---
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const user = tg.initDataUnsafe.user;
-            let userInfoText = `Користувач: ${user.first_name || ''} <span class="math-inline">\{user\.last\_name \|\| ''\} \(@</span>{user.username || 'N/A'}, ID: ${user.id})`;
+            let userInfoText = `Користувач: ${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'N/A'}, ID: ${user.id})`;
             userInfoDiv.innerHTML = userInfoText;
         } else {
             userInfoDiv.textContent = "Дані користувача Telegram недоступні.";
