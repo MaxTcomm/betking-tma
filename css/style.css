@@ -35,7 +35,7 @@ nav {
     border-bottom: 1px solid var(--tg-theme-hint-color, #cccccc);
 }
 
-nav button.nav-button { /* Додав .nav-button для специфічності */
+nav button.nav-button {
     flex-grow: 1;
     padding: 10px 5px;
     font-size: 14px;
@@ -46,24 +46,25 @@ nav button.nav-button { /* Додав .nav-button для специфічнос�
     cursor: pointer;
     margin: 0 2px;
     opacity: 0.7;
-    transition: opacity 0.2s ease-in-out, background-color 0.2s ease-in-out; /* Плавність */
+    transition: opacity 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
 nav button.nav-button.active {
     opacity: 1;
     background-color: var(--tg-theme-link-color, #0056b3);
-    border-bottom: 3px solid var(--tg-theme-button-text-color, #FFE433);
+    border-bottom: 3px solid #FFE433; /* Явно заданий колір для активної вкладки, як ми робили для кнопок */
 }
 
 .page-content {
     padding: 15px;
     flex-grow: 1;
+    position: relative; /* Для позиціонування лоадера */
 }
 
 /* Загальні стилі для елементів на сторінках */
 h2 {
     font-size: 20px;
-    margin-top: 10px; /* Зменшив верхній відступ для заголовків сторінок */
+    margin-top: 10px;
     margin-bottom: 15px;
     text-align: center;
 }
@@ -83,7 +84,12 @@ button, .odds-button, .stake-button, .action-button, .prediction-button {
     cursor: pointer;
     margin: 5px;
     min-width: 80px;
+    transition: background-color 0.2s ease; /* Плавність для кнопок */
 }
+button:hover, .odds-button:hover, .stake-button:hover, .action-button:hover, .prediction-button:hover {
+    opacity: 0.9;
+}
+
 
 .odds-button.selected, .prediction-button.selected {
     background-color: #FFE433;
@@ -92,7 +98,9 @@ button, .odds-button, .stake-button, .action-button, .prediction-button {
 
 .prediction-button:disabled {
     background-color: var(--tg-theme-hint-color, #cccccc);
+    color: var(--tg-theme-text-color, #777777);
     cursor: not-allowed;
+    opacity: 0.7;
 }
 
 .stake-options, .bet-confirmation, .prediction-result {
@@ -102,38 +110,38 @@ button, .odds-button, .stake-button, .action-button, .prediction-button {
 }
 
 .hidden {
-    display: none !important; /* Важливо для перекриття інших display */
+    display: none !important;
 }
 
-.user-info-footer { /* Змінив ID на клас, якщо будемо використовувати його ще десь */
+.user-info-footer {
     padding: 15px;
     text-align: center;
     font-size: 12px;
     color: var(--tg-theme-hint-color, #999999);
     word-break: break-all;
     border-top: 1px solid var(--tg-theme-hint-color, #cccccc);
-    margin-top: auto; /* Притискає футер до низу, якщо контенту мало */
+    margin-top: auto;
 }
 
 .section-block {
-    padding: 10px;
+    padding: 15px; /* Збільшив трохи padding */
     border: 1px solid var(--tg-theme-hint-color, #dddddd);
     border-radius: 8px;
-    margin-bottom: 15px;
+    margin-bottom: 20px; /* Збільшив трохи відступ */
     background-color: var(--tg-theme-secondary-bg-color, #f8f8f8);
-    text-align: center; /* Додав для центрування вмісту блоків */
+    text-align: center;
 }
 
 .teams, .express-title, .daily-match-title {
     font-size: 18px;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 8px; /* Збільшив трохи відступ */
 }
 
 .match-date, .express-total-odds, .streak-info, .rewards-info {
     font-size: 14px;
     color: var(--tg-theme-hint-color, #777777);
-    margin-bottom: 10px;
+    margin-bottom: 12px; /* Збільшив трохи відступ */
 }
 
 .rewards-info {
@@ -144,7 +152,7 @@ button, .odds-button, .stake-button, .action-button, .prediction-button {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 15px; /* Збільшив трохи відступ */
 }
 
 .express-selections {
@@ -153,10 +161,13 @@ button, .odds-button, .stake-button, .action-button, .prediction-button {
     text-align: left;
     font-size: 14px;
     margin-bottom: 10px;
+    background-color: var(--tg-theme-bg-color, #ffffff); /* Фон для списку всередині блоку */
+    padding: 10px;
+    border-radius: 5px;
 }
 
 .express-selections li {
-    padding: 5px 0;
+    padding: 8px 5px; /* Збільшив трохи padding */
     border-bottom: 1px dashed var(--tg-theme-hint-color, #eeeeee);
 }
 
@@ -165,22 +176,49 @@ button, .odds-button, .stake-button, .action-button, .prediction-button {
 }
 
 .info-message {
-    padding: 10px;
+    padding: 12px; /* Збільшив трохи padding */
     margin-top: 15px;
     border-radius: 5px;
     font-size: 14px;
     border: 1px solid transparent;
     text-align: center;
+    line-height: 1.5;
 }
 
 .info-message.success {
-    background-color: var(--tg-theme-secondary-bg-color, #e6ffed);
-    border-color: var(--tg-theme-button-color, #58cc02);
-    color: var(--tg-theme-text-color, #1c7430); /* Зробив текст трохи темнішим для кращої читабельності */
+    background-color: #d4edda; /* Явні кольори для кращої консистентності */
+    border-color: #c3e6cb;
+    color: #155724;
 }
 
 .info-message.notice {
-    background-color: var(--tg-theme-secondary-bg-color, #fff3cd);
-    border-color: var(--tg-theme-button-color, #ffeeba);
-    color: var(--tg-theme-text-color, #856404);
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+    color: #856404;
+}
+.info-message.error {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* Loader styles */
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* Або інша висота, залежно від потреби */
+}
+.loader {
+    border: 5px solid var(--tg-theme-hint-color, #f3f3f3);
+    border-top: 5px solid var(--tg-theme-button-color, #3498db);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

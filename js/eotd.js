@@ -1,53 +1,71 @@
 // js/eotd.js
-const tgE = window.Telegram.WebApp;
+(function() {
+    const eotdContent = document.getElementById('expressOfTheDayContent');
+    if (!eotdContent) {
+        // console.log('EOTD content not found, script will not run yet.');
+        return;
+    }
+    // console.log('EOTD script executing.');
 
-const expressOfTheDayData = {
-    title: "Супер Експрес на Вихідні!",
-    selections: [
-        { description: "Манчестер Юнайтед - Перемога" },
-        { description: "Барселона - ТБ 2.5" },
-        { description: "Ювентус - Фора(0)" }
-    ],
-    totalOdds: 6.75
-};
+    const tgE = window.Telegram.WebApp;
 
-const expressTitleEl = document.getElementById('expressTitle');
-const expressSelectionsEl = document.getElementById('expressSelections');
-const expressTotalOddsEl = document.getElementById('expressTotalOdds');
-const acceptExpressButton = document.getElementById('acceptExpressButton');
-const eotdStakeOptionsEl = document.getElementById('eotdStakeOptions');
-const eotdBetConfirmationEl = document.getElementById('eotdBetConfirmation');
+    const expressOfTheDayData = {
+        title: "Супер Експрес на Вихідні!",
+        selections: [
+            { description: "Манчестер Юнайтед - Перемога" },
+            { description: "Барселона - ТБ 2.5" },
+            { description: "Ювентус - Фора(0)" }
+        ],
+        totalOdds: 6.75
+    };
 
-function displayExpressOfTheDay() {
-    if (!expressTitleEl) return;
+    const expressTitleEl = eotdContent.querySelector('#expressTitle');
+    const expressSelectionsEl = eotdContent.querySelector('#expressSelections');
+    const expressTotalOddsEl = eotdContent.querySelector('#expressTotalOdds');
+    const acceptExpressButton = eotdContent.querySelector('#acceptExpressButton');
+    const eotdStakeOptionsEl = eotdContent.querySelector('#eotdStakeOptions');
+    const eotdBetConfirmationEl = eotdContent.querySelector('#eotdBetConfirmation');
 
-    expressTitleEl.textContent = expressOfTheDayData.title;
-    expressSelectionsEl.innerHTML = ''; 
-    expressOfTheDayData.selections.forEach(selection => {
-        const listItem = document.createElement('li');
-        listItem.textContent = selection.description;
-        expressSelectionsEl.appendChild(listItem);
-    });
-    expressTotalOddsEl.textContent = `Загальний коефіцієнт: ${expressOfTheDayData.totalOdds.toFixed(2)}`;
-}
+    function displayExpressOfTheDay() {
+        if (!expressTitleEl || !expressSelectionsEl || !expressTotalOddsEl) {
+            console.error('EOTD DOM elements not found for display.');
+            return;
+        }
+        expressTitleEl.textContent = expressOfTheDayData.title;
+        expressSelectionsEl.innerHTML = ''; 
+        expressOfTheDayData.selections.forEach(selection => {
+            const listItem = document.createElement('li');
+            listItem.textContent = selection.description;
+            expressSelectionsEl.appendChild(listItem);
+        });
+        expressTotalOddsEl.textContent = `Загальний коефіцієнт: ${expressOfTheDayData.totalOdds.toFixed(2)}`;
+    }
 
-acceptExpressButton.addEventListener('click', function() {
-    eotdStakeOptionsEl.classList.remove('hidden');
-    eotdBetConfirmationEl.innerHTML = '';
-});
+    if (acceptExpressButton) {
+        acceptExpressButton.addEventListener('click', function() {
+            if (eotdStakeOptionsEl) eotdStakeOptionsEl.classList.remove('hidden');
+            if (eotdBetConfirmationEl) eotdBetConfirmationEl.innerHTML = '';
+        });
+    }
 
-document.querySelectorAll('.eotd-stake').forEach(button => {
-    button.addEventListener('click', function() {
-        const amount = parseInt(this.dataset.amount);
-        const potentialWin = (amount * expressOfTheDayData.totalOdds).toFixed(2);
-        const confirmationMessage = `Експрес дня: Вашу ставку з коеф. ${expressOfTheDayData.totalOdds.toFixed(2)} на суму ${amount} грн прийнято (MVP).<br>Можливий виграш: ${potentialWin} грн.`;
-        eotdBetConfirmationEl.innerHTML = `<div class="info-message success">${confirmationMessage.replace(/\n/g, "<br>")}</div>`;
-        
-        tgE.HapticFeedback.notificationOccurred('success');
-        if (typeof confetti === 'function') { confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, zIndex: 9999 }); }
-        
-        eotdStakeOptionsEl.classList.add('hidden');
-    });
-});
+    if (eotdStakeOptionsEl) {
+        eotdStakeOptionsEl.querySelectorAll('.eotd-stake').forEach(button => {
+            button.addEventListener('click', function() {
+                const amount = parseInt(this.dataset.amount);
+                const potentialWin = (amount * expressOfTheDayData.totalOdds).toFixed(2);
+                const confirmationMessage = `Експрес дня: Вашу ставку з коеф. ${expressOfTheDayData.totalOdds.toFixed(2)} на суму ${amount} грн прийнято (MVP).<br>Можливий виграш: ${potentialWin} грн.`;
+                
+                if (eotdBetConfirmationEl) eotdBetConfirmationEl.innerHTML = `<div class="info-message success">${confirmationMessage.replace(/\n/g, "<br>")}</div>`;
+                
+                tgE.HapticFeedback.notificationOccurred('success');
+                if (window.confetti) { // Використовуємо window.confetti
+                     window.confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, zIndex: 10000 });
+                }
+                
+                eotdStakeOptionsEl.classList.add('hidden');
+            });
+        });
+    }
 
-displayExpressOfTheDay();
+    displayExpressOfTheDay();
+})();
