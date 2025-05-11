@@ -1,0 +1,186 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+    color: var(--tg-theme-text-color, #000000);
+    background-color: var(--tg-theme-bg-color, #ffffff);
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-header {
+    padding: 10px 15px;
+    background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+    border-bottom: 1px solid var(--tg-theme-hint-color, #cccccc);
+    text-align: center;
+}
+
+.balance-info p {
+    margin: 2px 0;
+    font-size: 12px;
+    color: var(--tg-theme-text-color, #333333);
+}
+
+.balance-info strong {
+    color: var(--tg-theme-link-color, #007bff);
+}
+
+nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background-color: var(--tg-theme-secondary-bg-color, #e9ecef);
+    border-bottom: 1px solid var(--tg-theme-hint-color, #cccccc);
+}
+
+nav button.nav-button { /* Додав .nav-button для специфічності */
+    flex-grow: 1;
+    padding: 10px 5px;
+    font-size: 14px;
+    color: var(--tg-theme-button-text-color, #ffffff);
+    background-color: var(--tg-theme-button-color, #007bff);
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    margin: 0 2px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease-in-out, background-color 0.2s ease-in-out; /* Плавність */
+}
+
+nav button.nav-button.active {
+    opacity: 1;
+    background-color: var(--tg-theme-link-color, #0056b3);
+    border-bottom: 3px solid var(--tg-theme-button-text-color, #FFE433);
+}
+
+.page-content {
+    padding: 15px;
+    flex-grow: 1;
+}
+
+/* Загальні стилі для елементів на сторінках */
+h2 {
+    font-size: 20px;
+    margin-top: 10px; /* Зменшив верхній відступ для заголовків сторінок */
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+p {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+button, .odds-button, .stake-button, .action-button, .prediction-button {
+    padding: 10px 15px;
+    font-size: 16px;
+    color: var(--tg-theme-button-text-color, #ffffff);
+    background-color: var(--tg-theme-button-color, #007bff);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 5px;
+    min-width: 80px;
+}
+
+.odds-button.selected, .prediction-button.selected {
+    background-color: #FFE433;
+    color: #000000;
+}
+
+.prediction-button:disabled {
+    background-color: var(--tg-theme-hint-color, #cccccc);
+    cursor: not-allowed;
+}
+
+.stake-options, .bet-confirmation, .prediction-result {
+    margin-top: 15px;
+    min-height: 40px;
+    text-align: center;
+}
+
+.hidden {
+    display: none !important; /* Важливо для перекриття інших display */
+}
+
+.user-info-footer { /* Змінив ID на клас, якщо будемо використовувати його ще десь */
+    padding: 15px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--tg-theme-hint-color, #999999);
+    word-break: break-all;
+    border-top: 1px solid var(--tg-theme-hint-color, #cccccc);
+    margin-top: auto; /* Притискає футер до низу, якщо контенту мало */
+}
+
+.section-block {
+    padding: 10px;
+    border: 1px solid var(--tg-theme-hint-color, #dddddd);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background-color: var(--tg-theme-secondary-bg-color, #f8f8f8);
+    text-align: center; /* Додав для центрування вмісту блоків */
+}
+
+.teams, .express-title, .daily-match-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.match-date, .express-total-odds, .streak-info, .rewards-info {
+    font-size: 14px;
+    color: var(--tg-theme-hint-color, #777777);
+    margin-bottom: 10px;
+}
+
+.rewards-info {
+    font-style: italic;
+}
+
+.odds-container, .prediction-options {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.express-selections {
+    list-style: none;
+    padding-left: 0;
+    text-align: left;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.express-selections li {
+    padding: 5px 0;
+    border-bottom: 1px dashed var(--tg-theme-hint-color, #eeeeee);
+}
+
+.express-selections li:last-child {
+    border-bottom: none;
+}
+
+.info-message {
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    border: 1px solid transparent;
+    text-align: center;
+}
+
+.info-message.success {
+    background-color: var(--tg-theme-secondary-bg-color, #e6ffed);
+    border-color: var(--tg-theme-button-color, #58cc02);
+    color: var(--tg-theme-text-color, #1c7430); /* Зробив текст трохи темнішим для кращої читабельності */
+}
+
+.info-message.notice {
+    background-color: var(--tg-theme-secondary-bg-color, #fff3cd);
+    border-color: var(--tg-theme-button-color, #ffeeba);
+    color: var(--tg-theme-text-color, #856404);
+}
