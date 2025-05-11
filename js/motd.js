@@ -6,108 +6,138 @@
     }
 
     const tgM = window.Telegram.WebApp;
-    // Доступ до глобальних функцій та змінних з app.js
     const updateBalanceDisplay = window.updateBalanceDisplay;
     const currentBalances = window.currentBalances;
-    const confetti = window.confetti;
+    const confetti = window.confetti; // Має бути window.confetti з app.js
 
-
-    const matchOfTheDayData = { /* ... (дані матчу як раніше) ... */ };
-    matchOfTheDayData.team1 = "Динамо Київ"; // Для повноти, якщо вони були скорочені
-    matchOfTheDayData.team2 = "Шахтар Донецьк";
-    matchOfTheDayData.date = "12 Травня 2025, 19:00";
-    matchOfTheDayData.odds = {
-        p1: { name: "П1", value: 2.50, description: "Перемога Динамо Київ" },
-        x:  { name: "X", value: 3.20, description: "Нічия" },
-        p2: { name: "П2", value: 2.80, description: "Перемога Шахтар Донецьк" }
+    const matchOfTheDayData = {
+        titlePrefix: "Матч дня",
+        team1: "Динамо Київ",
+        team2: "Шахтар Донецьк",
+        date: "12 червня 2025, 19:00", // Як на макеті
+        odds: {
+            p1: { name: "П1", value: 2.50, description: "Перемога Динамо Київ" },
+            x:  { name: "X", value: 3.20, description: "Нічия" },
+            p2: { name: "П2", value: 2.80, description: "Перемога Шахтар Донецьк" }
+        },
+        stakeAmounts: [100, 200, 500]
     };
     let motdSelectedOdd = null;
 
-    const matchTeamsEl = motdContent.querySelector('#matchTeams');
-    const matchDateEl = motdContent.querySelector('#matchDate');
-    const oddsContainerEl = motdContent.querySelector('#oddsContainer');
-    const motdStakeOptionsEl = motdContent.querySelector('#motdStakeOptions');
+    // Отримуємо елементи з нового HTML
+    const motdTitleDateEl = motdContent.querySelector('#motdTitleDate');
+    const motdTeamsEl = motdContent.querySelector('#motdTeams');
+    const motdOddsContainerEl = motdContent.querySelector('#motdOddsContainer');
+    const motdStakeOptionsAreaEl = motdContent.querySelector('#motdStakeOptionsArea');
+    const motdStakeTitleEl = motdContent.querySelector('#motdStakeTitle'); // Оновлено
+    const motdStakeButtonsContainerEl = motdContent.querySelector('#motdStakeButtonsContainer');
+    const motdFreebetButtonContainerEl = motdContent.querySelector('#motdFreebetButtonContainer');
     const motdBetConfirmationEl = motdContent.querySelector('#motdBetConfirmation');
 
-    function displayMatchOfTheDay() { /* ... (код без змін) ... */ }
-    // Копіюємо тіло функції displayMatchOfTheDay
     function displayMatchOfTheDay() {
-        if (!matchTeamsEl || !matchDateEl || !oddsContainerEl) {
-            console.error('MOTD DOM elements not found for display.');
+        if (!motdTitleDateEl || !motdTeamsEl || !motdOddsContainerEl) {
+            console.error('MOTD: Core DOM elements not found for initial display.');
             return;
         }
-        matchTeamsEl.textContent = `${matchOfTheDayData.team1} - ${matchOfTheDayData.team2}`;
-        matchDateEl.textContent = matchOfTheDayData.date;
-        oddsContainerEl.innerHTML = '';
+        motdTitleDateEl.textContent = `${matchOfTheDayData.titlePrefix} • ${matchOfTheDayData.date}`;
+        motdTeamsEl.textContent = `${matchOfTheDayData.team1} - ${matchOfTheDayData.team2}`;
+        
+        motdOddsContainerEl.innerHTML = ''; // Очищення перед додаванням нових
         for (const key in matchOfTheDayData.odds) {
             const odd = matchOfTheDayData.odds[key];
             const button = document.createElement('button');
             button.className = 'odds-button';
             button.dataset.key = key;
-            button.innerHTML = `${odd.name}<br>${odd.value.toFixed(2)}`;
+            // Створюємо внутрішню структуру для тексту та значення
+            button.innerHTML = `
+                <span class="odd-name">${odd.name}</span>
+                <span class="odd-value">${odd.value.toFixed(2)}</span>
+            `;
             button.addEventListener('click', handleMotdOddSelection);
-            oddsContainerEl.appendChild(button);
+            motdOddsContainerEl.appendChild(button);
         }
     }
 
-
     function handleMotdOddSelection(event) {
-        oddsContainerEl.querySelectorAll('.odds-button').forEach(btn => btn.classList.remove('selected'));
+        motdOddsContainerEl.querySelectorAll('.odds-button').forEach(btn => btn.classList.remove('selected'));
         const selectedButton = event.currentTarget;
         selectedButton.classList.add('selected');
+        
         const oddKey = selectedButton.dataset.key;
         motdSelectedOdd = matchOfTheDayData.odds[oddKey];
         
-        if (motdStakeOptionsEl) {
-            // Очистити попередні кнопки фрібетів, якщо вони були
-            const existingFreebetButton = motdStakeOptionsEl.querySelector('.freebet-stake-button');
-            if (existingFreebetButton) {
-                existingFreebetButton.remove();
-            }
+        // Показываем блок выбора ставки
+        if (motdStakeOptionsAreaEl) motdStakeOptionsAreaEl.classList.remove('hidden');
+        if (motdBetConfirmationEl) motdBetConfirmationEl.innerHTML = ''; // Очищаем предыдущее подтверждение
 
-            // Якщо є фрібети, додаємо кнопку для їх використання
+        // Генерируем кнопки сумм ставок
+        if (motdStakeButtonsContainerEl) {
+            motdStakeButtonsContainerEl.innerHTML = ''; // Очищаем
+            matchOfTheDayData.stakeAmounts.forEach(amount => {
+                const stakeButton = document.createElement('button');
+                stakeButton.className = 'stake-button motd-stake';
+                stakeButton.dataset.amount = amount;
+                stakeButton.textContent = `${amount} ₴`; // Текст кнопки як на макеті
+                stakeButton.addEventListener('click', processBetPlacement);
+                motdStakeButtonsContainerEl.appendChild(stakeButton);
+            });
+        }
+
+        // Генерируем кнопку фрибета, если есть
+        if (motdFreebetButtonContainerEl) {
+            motdFreebetButtonContainerEl.innerHTML = ''; // Очищаем
             if (currentBalances.freebets > 0) {
                 const freebetButton = document.createElement('button');
-                freebetButton.className = 'stake-button freebet-stake-button'; // Додаємо новий клас
-                freebetButton.textContent = `Використати Фрібет (${currentBalances.freebets} шт.)`;
-                freebetButton.dataset.amount = 'freebet'; // Спеціальне значення для ідентифікації
+                // ID тут не потрібен, стилізуємо по класу або атрибуту
+                freebetButton.className = 'action-button'; // Загальний клас для таких кнопок або специфічний
+                freebetButton.id = 'motdFreebetButton'; // Як у CSS
+                freebetButton.dataset.amount = 'freebet';
+                // Текст кнопки як на макеті (сума фрібету може бути динамічною, якщо є різні номінали)
+                // Припускаємо, що є один тип фрібету з номіналом 250 грн, як на макеті
+                freebetButton.textContent = `Використати Фрібет (${currentBalances.freebets > 0 ? '250 ₴': '0 шт.'})`; 
+                if(currentBalances.freebets === 0) freebetButton.disabled = true;
+
                 freebetButton.addEventListener('click', processBetPlacement);
-                // Вставляємо кнопку фрібету перед кнопками звичайних сум
-                motdStakeOptionsEl.insertBefore(freebetButton, motdStakeOptionsEl.querySelector('.motd-stake'));
+                motdFreebetButtonContainerEl.appendChild(freebetButton);
             }
-            motdStakeOptionsEl.classList.remove('hidden');
         }
-        if (motdBetConfirmationEl) motdBetConfirmationEl.innerHTML = '';
+         // Оновлюємо текст заголовка для ставок
+        if (motdStakeTitleEl) motdStakeTitleEl.textContent = "Обери суму ставки для Матчу дня:";
     }
 
-    // Функція для обробки розміщення ставки (і для фрібетів, і для грошей)
     function processBetPlacement(event) {
-        const stakeType = event.currentTarget.dataset.amount; // 'freebet' або числова сума
+        const stakeTypeOrAmount = event.currentTarget.dataset.amount; 
 
         if (!motdSelectedOdd) {
             tgM.showAlert('Будь ласка, спочатку оберіть результат матчу дня!');
             return;
         }
 
-        let amount = 0;
-        let messagePrefix = "Матч дня: ";
+        let stakeAmountForCalc = 0; // Сума для розрахунку потенційного виграшу
+        let messageTitle = "";
+        let messageDetails = "";
         let betMade = false;
 
-        if (stakeType === 'freebet') {
+        if (stakeTypeOrAmount === 'freebet') {
             if (currentBalances.freebets > 0) {
                 currentBalances.freebets--;
-                amount = 0; // Сума не списується з основного балансу
-                messagePrefix += `Ставка Фрібетом. `;
+                // Припускаємо, що фрібет має еквівалент 250 грн для розрахунку виграшу, як на макеті
+                stakeAmountForCalc = 250; 
+                messageTitle = `Матч дня: Ставка Фрібетом (${stakeAmountForCalc} ₴)`;
+                messageDetails = `Твою ставку на “${motdSelectedOdd.description}” (П1 @${motdSelectedOdd.value.toFixed(2)}) прийнято (MVP). Виграш з фрібету буде зараховано на основний баланс.`;
                 betMade = true;
             } else {
                 tgM.showAlert('У вас немає доступних фрібетів.');
                 return;
             }
         } else {
-            amount = parseInt(stakeType);
-            if (currentBalances.main >= amount) {
-                currentBalances.main -= amount;
-                messagePrefix += `Ставка ${amount} грн. `;
+            const numericAmount = parseInt(stakeTypeOrAmount);
+            if (currentBalances.main >= numericAmount) {
+                currentBalances.main -= numericAmount;
+                stakeAmountForCalc = numericAmount;
+                messageTitle = `Матч дня: Ставка ${numericAmount} ₴`;
+                const potentialWin = (stakeAmountForCalc * motdSelectedOdd.value).toFixed(2);
+                messageDetails = `Твою ставку на “${motdSelectedOdd.description}” (${motdSelectedOdd.name} @${motdSelectedOdd.value.toFixed(2)}) прийнято (MVP). Можливий виграш: ${potentialWin} ₴.`;
                 betMade = true;
             } else {
                 tgM.showAlert('Недостатньо коштів на основному балансі.');
@@ -116,28 +146,27 @@
         }
 
         if (betMade) {
-            updateBalanceDisplay(); // Оновлюємо відображення балансів у хедері
+            if (typeof updateBalanceDisplay === 'function') { // Перевіряємо наявність функції
+                updateBalanceDisplay(); 
+            }
 
-            const potentialWin = (amount > 0 ? amount : 100) * motdSelectedOdd.value; // Умовний розрахунок виграшу для фрібету, ніби він 100 грн
-            const confirmationMessage = `${messagePrefix}Вашу ставку на "${motdSelectedOdd.description}" (${motdSelectedOdd.name} @${motdSelectedOdd.value.toFixed(2)}) прийнято (MVP).<br>${stakeType !== 'freebet' ? `Можливий виграш: ${potentialWin.toFixed(2)} грн.` : `Виграш з фрібету буде зараховано на основний баланс.` }`;
-            
-            if (motdBetConfirmationEl) motdBetConfirmationEl.innerHTML = `<div class="info-message success">${confirmationMessage.replace(/\n/g, "<br>")}</div>`;
+            if (motdBetConfirmationEl) {
+                motdBetConfirmationEl.innerHTML = `
+                    <div class="info-message success">
+                        <span class="message-title">${messageTitle}</span>
+                        <span class="message-details">${messageDetails.replace(/\n/g, "<br>")}</span>
+                    </div>`;
+            }
             
             tgM.HapticFeedback.notificationOccurred('success');
             if (confetti) { confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, zIndex: 10000 }); }
         }
 
-        if (motdStakeOptionsEl) motdStakeOptionsEl.classList.add('hidden');
-        if (oddsContainerEl) oddsContainerEl.querySelectorAll('.odds-button').forEach(btn => btn.classList.remove('selected'));
+        if (motdStakeOptionsAreaEl) motdStakeOptionsAreaEl.classList.add('hidden');
+        if (motdOddsContainerEl) motdOddsContainerEl.querySelectorAll('.odds-button').forEach(btn => btn.classList.remove('selected'));
         motdSelectedOdd = null;
     }
     
-    if (motdStakeOptionsEl) {
-        motdStakeOptionsEl.querySelectorAll('.motd-stake').forEach(button => {
-            // Тепер ця функція викликає processBetPlacement
-            button.addEventListener('click', processBetPlacement);
-        });
-    }
-    
+    // Ініціалізація при завантаженні сторінки "Матч дня"
     displayMatchOfTheDay();
 })();
