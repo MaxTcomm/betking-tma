@@ -1,39 +1,39 @@
 // js/motd.js
 (function() {
     const motdContent = document.getElementById('matchOfTheDayContent');
-    if (!motdContent) {
-        return;
-    }
+    if (!motdContent) { return; }
 
-    // ... (решта коду без змін до функції handleMotdOddSelection) ...
     const tgM = window.Telegram.WebApp;
-    const updateBalanceDisplay = window.updateBalanceDisplay; 
-    const currentBalances = window.currentBalances;         
-    const confetti = window.confetti; 
+    const updateBalanceDisplay = window.updateBalanceDisplay;
+    const currentBalances = window.currentBalances;
+    const confetti = window.confetti;
 
-    const matchOfTheDayData = {
-        titlePrefix: "Матч дня",
-        team1: "Динамо Київ",
-        team2: "Шахтар Донецьк",
-        date: "12 червня 2025, 19:00", 
-        odds: {
-            p1: { name: "П1", value: 2.50, description: "Перемога Динамо Київ" },
-            x:  { name: "X", value: 3.20, description: "Нічия" },
-            p2: { name: "П2", value: 2.80, description: "Перемога Шахтар Донецьк" }
-        },
-        stakeAmounts: [100, 200, 500] 
+    const matchOfTheDayData = { /* ... (дані як раніше) ... */ };
+    matchOfTheDayData.team1 = "Динамо Київ";
+    matchOfTheDayData.team2 = "Шахтар Донецьк";
+    matchOfTheDayData.date = "12 червня 2025, 19:00";
+    matchOfTheDayData.odds = {
+        p1: { name: "П1", value: 2.50, description: "Перемога Динамо Київ" },
+        x:  { name: "X", value: 3.20, description: "Нічия" },
+        p2: { name: "П2", value: 2.80, description: "Перемога Шахтар Донецьк" }
     };
-    let motdSelectedOdd = null; 
+    matchOfTheDayData.stakeAmounts = [100, 200, 500];
+    
+    let motdSelectedOdd = null;
+    let motdSelectedStakeTypeOrAmount = null; // Зберігаємо обрану суму/фрібет
 
     const motdTitleDateEl = motdContent.querySelector('#motdTitleDate');
     const motdTeamsEl = motdContent.querySelector('#motdTeams');
     const motdOddsContainerEl = motdContent.querySelector('#motdOddsContainer');
     const motdStakeOptionsAreaEl = motdContent.querySelector('#motdStakeOptionsArea');
-    const motdStakeTitleEl = motdContent.querySelector('#motdStakeTitle'); 
+    const motdStakeTitleEl = motdContent.querySelector('#motdStakeTitle');
     const motdStakeButtonsContainerEl = motdContent.querySelector('#motdStakeButtonsContainer');
     const motdFreebetButtonContainerEl = motdContent.querySelector('#motdFreebetButtonContainer');
+    const motdPlaceBetButtonContainerEl = motdContent.querySelector('#motdPlaceBetButtonContainer'); // Новий контейнер
+    const motdExecuteBetButtonEl = motdContent.querySelector('#motdExecuteBetButton'); // Нова кнопка
     const motdBetConfirmationEl = motdContent.querySelector('#motdBetConfirmation');
 
+    function displayMatchOfTheDay() { /* ... (код без змін з останньої версії) ... */ }
     function displayMatchOfTheDay() {
         if (!motdTitleDateEl || !motdTeamsEl || !motdOddsContainerEl) {
             console.error('MOTD: Core DOM elements not found for initial display.');
@@ -55,9 +55,10 @@
             button.addEventListener('click', handleMotdOddSelection); 
             motdOddsContainerEl.appendChild(button); 
         }
-         // ПРИХОВУЄМО ЗАГОЛОВОК СУМ СТАВОК СПОЧАТКУ
         if(motdStakeTitleEl) motdStakeTitleEl.classList.add('hidden');
+        if(motdPlaceBetButtonContainerEl) motdPlaceBetButtonContainerEl.classList.add('hidden'); // Ховаємо кнопку "Зробити ставку"
     }
+
 
     function handleMotdOddSelection(event) {
         motdOddsContainerEl.querySelectorAll('.odds-button').forEach(btn => btn.classList.remove('selected'));
@@ -67,15 +68,16 @@
         const oddKey = selectedButton.dataset.key; 
         motdSelectedOdd = matchOfTheDayData.odds[oddKey]; 
         
-        if (motdStakeOptionsAreaEl) motdStakeOptionsAreaEl.classList.remove('hidden');
+        motdSelectedStakeTypeOrAmount = null; // Скидаємо вибір суми при зміні коефіцієнта
+        if(motdPlaceBetButtonContainerEl) motdPlaceBetButtonContainerEl.classList.add('hidden'); // Ховаємо кнопку "Зробити ставку"
         if (motdBetConfirmationEl) motdBetConfirmationEl.innerHTML = ''; 
 
-        // ПОКАЗУЄМО ЗАГОЛОВОК СУМ СТАВОК
+        if (motdStakeOptionsAreaEl) motdStakeOptionsAreaEl.classList.remove('hidden');
+        
         if (motdStakeTitleEl) {
             motdStakeTitleEl.textContent = "Обери суму ставки для Матчу дня:";
-            motdStakeTitleEl.classList.remove('hidden'); // Показуємо його
+            motdStakeTitleEl.classList.remove('hidden');
         }
-
 
         if (motdStakeButtonsContainerEl) {
             motdStakeButtonsContainerEl.innerHTML = ''; 
@@ -84,7 +86,7 @@
                 stakeButton.className = 'stake-button motd-stake'; 
                 stakeButton.dataset.amount = amount; 
                 stakeButton.textContent = `${amount} ₴`; 
-                stakeButton.addEventListener('click', processBetPlacement); 
+                stakeButton.addEventListener('click', handleStakeSelection); // Новий обробник
                 motdStakeButtonsContainerEl.appendChild(stakeButton); 
             });
         }
@@ -97,17 +99,34 @@
                 freebetButton.dataset.amount = 'freebet'; 
                 freebetButton.textContent = `Використати Фрібет (${currentBalances.freebets > 0 ? '250 ₴': '0 шт.'})`;                 
                 if(currentBalances.freebets === 0) freebetButton.disabled = true;
-                freebetButton.addEventListener('click', processBetPlacement); 
+                freebetButton.addEventListener('click', handleStakeSelection); // Новий обробник
                 motdFreebetButtonContainerEl.appendChild(freebetButton); 
             }
         }
     }
 
-    function processBetPlacement(event) {
-        const stakeTypeOrAmount = event.currentTarget.dataset.amount; 
+    // Нова функція для обробки вибору суми/фрібету
+    function handleStakeSelection(event) {
+        motdSelectedStakeTypeOrAmount = event.currentTarget.dataset.amount;
 
+        // Візуально виділяємо обрану кнопку суми/фрібету (опціонально)
+        // Наприклад, додаючи клас 'selected' і знімаючи з інших
+        motdStakeButtonsContainerEl.querySelectorAll('.stake-button').forEach(btn => btn.classList.remove('selected')); // Припускаємо, що кнопки сум також можуть мати selected стиль
+        motdFreebetButtonContainerEl.querySelectorAll('#motdFreebetButton').forEach(btn => btn.classList.remove('selected'));
+        event.currentTarget.classList.add('selected'); // Потрібно додати стиль для .stake-button.selected
+
+        // Показуємо кнопку "Зробити ставку"
+        if (motdPlaceBetButtonContainerEl) motdPlaceBetButtonContainerEl.classList.remove('hidden');
+    }
+
+    // Функція, що викликається кнопкою "Зробити ставку"
+    function executeBetPlacement() {
         if (!motdSelectedOdd) { 
             tgM.showAlert('Будь ласка, спочатку оберіть результат матчу дня!');
+            return;
+        }
+        if (!motdSelectedStakeTypeOrAmount) {
+            tgM.showAlert('Будь ласка, оберіть суму ставки або фрібет!');
             return;
         }
 
@@ -116,7 +135,8 @@
         let messageDetails = "";    
         let betMade = false;        
 
-        if (stakeTypeOrAmount === 'freebet') { 
+        if (motdSelectedStakeTypeOrAmount === 'freebet') { 
+            // ... (логіка для фрібету як раніше) ...
             if (currentBalances.freebets > 0) {
                 currentBalances.freebets--; 
                 stakeAmountForCalc = 250; 
@@ -124,11 +144,12 @@
                 messageDetails = `Твою ставку на “${motdSelectedOdd.description}” (${motdSelectedOdd.name} @${motdSelectedOdd.value.toFixed(2)}) прийнято (MVP). Виграш з фрібету буде зараховано на основний баланс.`;
                 betMade = true;
             } else {
-                tgM.showAlert('У вас немає доступних фрібетів.');
+                tgM.showAlert('У вас немає доступних фрібетів.'); // Мало б не дійти сюди, якщо кнопка заблокована
                 return;
             }
         } else { 
-            const numericAmount = parseInt(stakeTypeOrAmount);
+            const numericAmount = parseInt(motdSelectedStakeTypeOrAmount);
+            // ... (логіка для грошової ставки як раніше) ...
             if (currentBalances.main >= numericAmount) { 
                 currentBalances.main -= numericAmount; 
                 stakeAmountForCalc = numericAmount;
@@ -148,7 +169,6 @@
             }
 
             if (motdBetConfirmationEl) {
-                // Додаємо клас .bet-placed-style до .info-message
                 motdBetConfirmationEl.innerHTML = `
                     <div class="info-message bet-placed-style"> 
                         <span class="message-title">${messageTitle}</span>
@@ -162,12 +182,19 @@
             }
         }
 
+        // Скидаємо все після ставки
         if (motdStakeOptionsAreaEl) motdStakeOptionsAreaEl.classList.add('hidden');
-        // ПРИХОВУЄМО ЗАГОЛОВОК СУМ СТАВОК ПІСЛЯ СТАВКИ
         if (motdStakeTitleEl) motdStakeTitleEl.classList.add('hidden');
+        if (motdPlaceBetButtonContainerEl) motdPlaceBetButtonContainerEl.classList.add('hidden');
         if (motdOddsContainerEl) motdOddsContainerEl.querySelectorAll('.odds-button').forEach(btn => btn.classList.remove('selected'));
         motdSelectedOdd = null;
+        motdSelectedStakeTypeOrAmount = null;
     }
-        
+
+    // Додаємо обробник до кнопки "Зробити ставку"
+    if (motdExecuteBetButtonEl) {
+        motdExecuteBetButtonEl.addEventListener('click', executeBetPlacement);
+    }
+    
     displayMatchOfTheDay();
 })();

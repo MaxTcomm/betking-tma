@@ -662,4 +662,31 @@ nav button.nav-button.active {
     font-weight: 300;
     line-height: 22px; 
     margin-bottom: 16px; 
+}/* ... (попередні стилі) ... */
+
+/* --- Кнопка "Зробити ставку" --- */
+.place-bet-button-container {
+    margin-top: 16px; /* Відступ від кнопок сум/фрібету */
+    margin-bottom: 24px;
 }
+
+.place-bet-button { /* Загальний клас для кнопки "Зробити ставку" */
+    background-color: var(--accent-yellow-color) !important; /* Жовтий фон */
+    color: var(--text-dark-color) !important; /* Темний текст */
+    font-weight: 500; /* Можна зробити жирнішим */
+    width: 100%;
+    max-width: 353px; 
+    margin-left: auto;
+    margin-right: auto;
+    display: block; 
+    box-sizing: border-box;
+    padding: 14px 20px; /* Трохи більший padding для головної кнопки */
+}
+/* Перевизначаємо :hover для жовтої кнопки, якщо потрібно інший ефект */
+.place-bet-button:hover {
+    background-color: #edd62f !important; /* Трохи темніший жовтий при наведенні */
+    transform: none; /* Прибираємо scale, якщо не потрібен */
+}
+
+
+/* ... (решта стилів) ... */
