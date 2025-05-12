@@ -3,6 +3,13 @@
     const motdContent = document.getElementById('matchOfTheDayContent');
     if (!motdContent) { return; }
 
+    if (typeof window.isUserCurrentlyLoggedIn !== 'function' || !window.isUserCurrentlyLoggedIn()) {
+        if (motdContent) { 
+             motdContent.innerHTML = '<div class="info-message notice">Будь ласка, увійдіть або зареєструйтеся, щоб переглянути цю секцію.</div>';
+        }
+        return; 
+    }
+    
     const tgM = window.Telegram.WebApp;
     const updateBalanceDisplay = window.updateBalanceDisplay;
     const currentBalances = window.currentBalances;

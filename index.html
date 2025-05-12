@@ -12,14 +12,18 @@
 </head>
 <body>
     <header class="main-header">
-        <div class="balance-info">
-            <p class="balance-line">Основний баланс: <strong id="mainBalanceDisplay">0.00</strong> ₴</p>
-            <p class="balance-line">Бонусний: <strong id="bonusBalanceDisplay">0.00</strong> ₴</p>
-            <p class="balance-line" id="freebetLine">
-                </p>
+        <div id="loggedInHeader" class="hidden"> <div class="balance-info">
+                <p class="balance-line">Основний баланс: <strong id="mainBalanceDisplay">0.00</strong> ₴</p>
+                <p class="balance-line">Бонусний: <strong id="bonusBalanceDisplay">0.00</strong> ₴</p>
+                <p class="balance-line" id="freebetLine">
+                    </p>
+            </div>
+            <div class="deposit-button-container">
+                <button id="depositButton" type="button">Депозит +</button>
+            </div>
         </div>
-        <div class="deposit-button-container">
-            <button id="depositButton" type="button">Депозит +</button>
+    
+        <div id="loggedOutHeader"> <button id="loginRegisterButton" class="place-bet-button">Увійти / Зареєструватися</button>
         </div>
     </header>
 

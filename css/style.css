@@ -359,3 +359,31 @@ nav button.nav-button.active {
     border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* css/style.css - ДОПОВНЕННЯ */
+
+/* Стиль для кнопки "Увійти / Зареєструватися" в хедері */
+/* Вона використовує клас .place-bet-button, який вже має бути стилізований (жовтий, на всю ширину) */
+/* Якщо #loginRegisterButton має бути єдиним елементом в .main-header, коли він видимий, */
+/* то .main-header має мати justify-content: center; для цього стану, або кнопка width: 100% */
+#loggedOutHeader { /* Контейнер для кнопки "Увійти / Зареєструватися" */
+    width: 100%; /* Розтягуємо контейнер на всю ширину хедера */
+    display: flex;
+    justify-content: center; /* Центруємо кнопку всередині, якщо вона не на 100% */
+}
+
+#loginRegisterButton {
+    /* Успадковує стилі від .place-bet-button */
+    /* Додатково, якщо потрібно перекрити ширину: */
+    width: 100%; /* Розтягуємо на всю ширину контейнера loggedOutHeader */
+    max-width: 400px; /* Можна обмежити максимальну ширину, якщо потрібно */
+    margin-top: 0; 
+    margin-bottom: 0;
+}
+
+/* Клас для приховування елементів */
+.hidden {
+    display: none !important;
+}
+
+/* ... (решта ваших стилів у css/style.css) ... */

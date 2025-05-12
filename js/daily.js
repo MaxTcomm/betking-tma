@@ -5,6 +5,13 @@
         return;
     }
 
+    if (typeof window.isUserCurrentlyLoggedIn !== 'function' || !window.isUserCurrentlyLoggedIn()) {
+        if (motdContent) { 
+             motdContent.innerHTML = '<div class="info-message notice">Будь ласка, увійдіть або зареєструйтеся, щоб переглянути цю секцію.</div>';
+        }
+        return; 
+    }
+
     const tgD = window.Telegram.WebApp;
     const getFormattedDate = window.getFormattedDate; // З app.js
     const TODAY_STRING = window.TODAY_STRING;     // З app.js
