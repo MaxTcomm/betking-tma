@@ -1,15 +1,15 @@
-/* css/style.css */
+/* css/style.css - Повна оновлена версія */
 
 :root {
     /* Кольори */
     --app-bg-color: #000000;
     --text-primary-color: #FFFFFF;
     --text-secondary-color: rgba(255, 255, 255, 0.70);
-    --text-tertiary-color: rgba(255, 255, 255, 0.50); /* Для менш важливого тексту */
+    --text-tertiary-color: rgba(255, 255, 255, 0.50);
     --text-dark-color: #000000; 
     --accent-yellow-color: #FFE433;
-    --accent-red-color: #FF4E33; /* Для кнопки видалення */
-    --accent-green-color: #11FF11; /* Для коефіцієнтів та стрілок в експресі */
+    --accent-red-color: #FF4E33; 
+    --accent-green-color: #11FF11; 
 
     --nav-inactive-tab-bg-color: rgba(255, 255, 255, 0.16);
     --nav-active-tab-bg-color: #FFFFFF;
@@ -31,7 +31,6 @@
     --message-error-bg-color: rgba(255, 59, 48, 0.15); 
     --message-error-border-color: rgba(255, 59, 48, 0.3);
 
-
     /* Шрифти */
     --font-family-main: 'Geologica', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     
@@ -46,10 +45,9 @@
     /* Paddings */
     --padding-button-deposit: 10px 20px; 
     --padding-nav-tab: 10px 8px; 
-    --padding-tab-interactive: 12px 6px; /* Для табів коеф/сум/прогнозів */
+    --padding-tab-interactive: 12px 6px; 
     --padding-message-block: 12px;
     --padding-express-card: 16px 12px;
-
 
     /* Анімації */
     --transition-duration: 0.2s;
@@ -67,10 +65,10 @@ body {
 /* --- Хедер --- */
 .main-header {
     padding: 16px 15px; display: flex;
-    justify-content: space-between; align-items: center;
+    justify-content: space-between; align-items: center; /* Важливо для вирівнювання висоти */
 }
 .balance-info { text-align: left; }
-.balance-info p {
+.balance-info p.balance-line { /* Додав клас для кращого керування */
     margin: 1px 0; font-family: var(--font-family-main); font-size: 14px;
     font-style: normal; line-height: 18px; color: var(--text-primary-color); font-weight: 200;
 }
@@ -84,14 +82,14 @@ body {
     font-weight: 500; line-height: 18px; cursor: pointer;
     transition: background-color var(--transition-duration) var(--transition-timing-function), transform var(--transition-transform-duration) var(--transition-timing-function);
     white-space: nowrap; box-sizing: border-box;
+    height: 100%; /* Намагаємося зробити висоту такою ж, як у .balance-info (але це залежить від контенту balance-info) */
+    /* Краще, якщо .main-header align-items: stretch; або обидва блоки мають однакову кількість рядків */
 }
 #depositButton:hover { background: #edd62f; transform: scale(1.03); }
 #depositButton:active { transform: scale(0.98); }
 
 /* --- Навігація (Таби) --- */
-nav {
-    display: flex; padding: 0; margin: 16px 15px 32px 15px;
-}
+nav { display: flex; padding: 0; margin: 16px 15px 32px 15px; }
 nav button.nav-button {
     display: flex; padding: var(--padding-nav-tab); justify-content: center; align-items: center;
     flex: 1 0 0; border-radius: var(--border-radius-oval); font-family: var(--font-family-main);
@@ -109,21 +107,10 @@ nav button.nav-button.active {
 
 /* --- Page Content & Common Page Elements --- */
 .page-content { padding: 0 15px 15px 15px; flex-grow: 1; position: relative; }
-
 .page-title-date { 
     color: var(--text-secondary-color); font-family: var(--font-family-main); font-size: 14px;
     font-style: normal; font-weight: 200; line-height: 18px; text-align: center; margin-bottom: 2px; 
-    /* Для "Експрес дня" - спільний стиль */
 }
-#eotdPageTitle { /* Специфічно для заголовка "Експрес дня", якщо він відрізняється */
-    color: var(--text-primary-color); font-size: 20px; font-weight: 500; line-height: 32px;
-    margin-bottom: 16px; /* Відступ знизу, як ви вказали */
-}
-#eotdPageTitle .date-part { /* Якщо дата в заголовку "Експрес дня" має інший стиль */
-    /* color: var(--text-primary-color); font-weight: 500; */ /* За вашими специфікаціями, дата така ж як заголовок */
-}
-
-
 .teams { 
     color: var(--text-primary-color); font-family: var(--font-family-main); font-size: 20px;
     font-style: normal; font-weight: 500; line-height: 32px; text-align: center;
@@ -131,43 +118,36 @@ nav button.nav-button.active {
 }
 
 /* --- Таби Коефіцієнтів, Сум, Фрібету, Прогнозів --- */
-.odds-container, /* Для коефіцієнтів на Матч дня */
-.stake-tabs-container, /* Для табів сум та фрібету на Матч дня та Експрес дня */
-.prediction-options { /* Для табів П1/Х/П2 на сторінці Прогноз */
+.odds-container, 
+.stake-tabs-container { /* Контейнер для табів сум та фрібету */
     display: flex;
     justify-content: center; 
-    gap: var(--gap-main); /* 8px */
-    margin-bottom: 16px; 
+    gap: var(--gap-main); 
+    margin-bottom: var(--gap-main); /* Відступ до наступного елементу (напр. кнопки фрібету або кнопки "Зробити ставку") */
+}
+/* Окремий контейнер для кнопки фрібету, якщо вона під табами сум */
+.freebet-button-container-single {
+    margin-top: var(--gap-main); /* Відступ від табів сум */
+    display: flex;
+    justify-content: center;
 }
 
-.tab-button { /* Універсальний стиль для всіх цих табів */
-    display: flex;
-    padding: var(--padding-tab-interactive); 
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: var(--gap-internal); 
-    flex: 1 0 0; 
-    border-radius: var(--border-radius-main); 
-    border: none; 
-    cursor: pointer;
+.tab-button { 
+    display: flex; padding: var(--padding-tab-interactive); 
+    flex-direction: column; justify-content: center; align-items: center;
+    gap: var(--gap-internal); flex: 1 0 0; 
+    border-radius: var(--border-radius-main); border: none; cursor: pointer;
     transition: background-color var(--transition-duration) var(--transition-timing-function), 
                 color var(--transition-duration) var(--transition-timing-function),
                 transform var(--transition-transform-duration) var(--transition-timing-function);
-    background-color: var(--tab-button-bg-color); 
-    color: var(--tab-button-text-color); 
+    background-color: var(--tab-button-bg-color); color: var(--tab-button-text-color); 
 }
-.tab-button:hover:not(.active) { /* Наведення на неактивний таб */
-    opacity: 0.85; 
-    transform: scale(1.02); /* Невелике збільшення при наведенні */
-}
+.tab-button:hover:not(.active) { opacity: 0.85; transform: scale(1.02); }
 .tab-button.active { 
     background-color: var(--tab-button-active-bg-color);
     color: var(--tab-button-active-text-color);
     transform: scale(1.05); 
 }
-
-/* Текст всередині табів коефіцієнтів */
 .tab-button .odd-name { 
     align-self: stretch; text-align: center; font-family: var(--font-family-main);
     font-size: 14px; font-style: normal; font-weight: 300; line-height: 16px; 
@@ -176,20 +156,28 @@ nav button.nav-button.active {
     align-self: stretch; text-align: center; font-family: var(--font-family-main);
     font-size: 18px; font-style: normal; font-weight: 500; line-height: 22px; 
 }
-
-/* Текст всередині табів сум, фрібету, прогнозу (один рядок) */
-.tab-button.stake-tab, 
-.tab-button.freebet-tab,
-.tab-button.prediction-choice-tab { /* Новий клас для табів прогнозу */
+.tab-button.stake-tab, /* Для табів сум */
+.tab-button.freebet-tab-single, /* Для окремої кнопки фрібету */
+.tab-button.prediction-choice-tab { 
     font-family: var(--font-family-main); font-size: 18px; 
     font-style: normal; font-weight: 500; line-height: 22px;
-    /* padding можна зробити більшим, якщо текст короткий і один рядок */
-    padding-top: 16px; padding-bottom: 16px; /* Збільшуємо вертикальний padding для однорядкових табів */
+    padding-top: 16px; padding-bottom: 16px; 
+}
+.tab-button.freebet-tab-single { /* Специфічно для кнопки фрібету на всю ширину */
+    flex: none; width: 100%; max-width: 353px; margin-left: auto; margin-right: auto;
+    border: 1px solid var(--text-secondary-color); /* Рамка як на макеті */
+    background-color: transparent; /* Прозорий фон */
+    color: var(--text-primary-color); /* Білий текст */
+}
+.tab-button.freebet-tab-single.active { /* Активний стан для кнопки фрібету */
+    background-color: var(--tab-button-active-bg-color); /* Жовтий */
+    color: var(--tab-button-active-text-color); /* Чорний */
+    border-color: var(--tab-button-active-bg-color); /* Жовта рамка */
 }
 
 
 /* Заголовок "Обери суму ставки..." */
-#motdStakeOptionsArea > p, #eotdStakeOptionsArea > p, #dailyPredictionOptionsArea > p { 
+#motdStakeOptionsArea > p, #eotdStakeOptionsArea > p { 
     color: var(--text-secondary-color); text-align: center; font-family: var(--font-family-main);
     font-size: 16px; font-style: normal; font-weight: 300; line-height: 22px; 
     margin-bottom: 16px; 
@@ -214,21 +202,25 @@ nav button.nav-button.active {
 .place-bet-button:hover { background-color: #edd62f; transform: scale(1.02); }
 .place-bet-button:active { transform: scale(0.98); background-color: #e0c92a; }
 
-
-/* --- Стилі для сторінки "Експрес дня" (доповнення/оновлення) --- */
+/* --- Стилі для сторінки "Експрес дня" --- */
+#eotdPageTitle { 
+    color: var(--text-primary-color); font-family: var(--font-family-main); font-size: 20px; 
+    font-style: normal; font-weight: 500; line-height: 32px; 
+    text-align: center; margin-bottom: 16px; 
+}
 .express-cards-list {
     display: flex; flex-direction: column;
     gap: 8px; margin-bottom: 16px; 
 }
 .express-match-card {
     display: flex; padding: var(--padding-express-card); flex-direction: column; 
-    gap: var(--gap-internal); /* Змінено з 2px на змінну */
+    gap: var(--gap-internal);
     border-radius: var(--border-radius-main);
     border: 0.5px solid var(--express-card-border-color);
     background: var(--express-card-bg-color);
     position: relative; overflow: hidden; 
     transition: opacity var(--transition-duration) var(--transition-timing-function),
-                max-height 0.3s var(--transition-timing-function), /* Трохи довша анімація для висоти */
+                max-height 0.3s var(--transition-timing-function), 
                 padding 0.3s var(--transition-timing-function),
                 margin 0.3s var(--transition-timing-function),
                 border-width 0.3s var(--transition-timing-function);
@@ -271,7 +263,7 @@ nav button.nav-button.active {
     color: var(--text-primary-color); font-family: var(--font-family-main); font-size: 16px;
     font-style: normal; font-weight: 300; line-height: 22px; 
 }
-.express-match-card .odds-arrow svg { /* Стиль для SVG стрілки */
+.express-match-card .odds-arrow svg { 
     width: 12px; height: 12px; fill: var(--accent-green-color); 
     vertical-align: middle; margin-right: 2px;
 }
@@ -282,8 +274,7 @@ nav button.nav-button.active {
 .express-summary-block {
     display: flex; flex-direction: column; align-items: flex-start; 
     gap: var(--gap-internal); align-self: stretch; 
-    margin-top: 16px; margin-bottom: 16px;
-    padding: 0 12px; 
+    margin-top: 16px; margin-bottom: 16px; padding: 0 12px; 
 }
 .express-summary-block .summary-line {
     display: flex; justify-content: space-between; width: 100%;
@@ -292,31 +283,14 @@ nav button.nav-button.active {
 .express-summary-block .summary-label { color: var(--text-primary-color); font-weight: 200; }
 .express-summary-block .summary-value { color: var(--text-primary-color); font-weight: 500; }
 
-#acceptExpressButton { /* Кнопка "Поставити на цей Експрес" тепер = кнопка "Зробити ставку" */
-    /* Вона вже успадковує стилі .place-bet-button, якщо ми додамо їй цей клас в JS */
-    /* Або копіюємо сюди стилі .place-bet-button: */
-    display: flex; justify-content: center; align-items: center;
-    width: 100%; height: 56px; padding: 0 20px; box-sizing: border-box;
-    border-radius: var(--border-radius-main); border: none;
-    font-family: var(--font-family-main); font-size: 18px;
-    font-style: normal; font-weight: 500; line-height: 22px;
-    background-color: var(--accent-yellow-color); color: var(--text-dark-color); 
-    cursor: pointer; text-align: center;
-    transition: background-color var(--transition-duration) var(--transition-timing-function), 
-                transform var(--transition-transform-duration) var(--transition-timing-function);
-    margin-top: 8px; 
+#acceptExpressButton { 
+    /* Ця кнопка тепер буде .place-bet-button, стилізована в загальному блоці */
+    /* Якщо вона має мати окремий ID та бути НЕ .place-bet-button, то стилі тут: */
+    /* background-color: var(--accent-yellow-color); color: var(--text-dark-color); ... */
 }
-#acceptExpressButton:hover { background-color: #edd62f; transform: scale(1.02); }
-#acceptExpressButton:active { transform: scale(0.98); background-color: #e0c92a; }
 .accept-express-button-container { margin-bottom: 24px; }
 
-
 /* --- Стилі для сторінки "Щоденний Прогноз" --- */
-.streak-info, .rewards-info { /* ... (без змін) ... */ }
-.streak-info #currentStreak { /* ... (без змін) ... */ }
-.daily-match-title { /* ... (без змін) ... */ }
-.daily-match-title #dailyMatchTeams { /* ... (без змін) ... */ }
-/* Кнопки П1/Х/П2 для прогнозу будуть використовувати клас .tab-button */
 .streak-info, .rewards-info {
     color: var(--text-secondary-color); font-family: var(--font-family-main); font-size: 14px;
     font-style: normal; font-weight: 300; line-height: 18px; text-align: center;
@@ -329,10 +303,18 @@ nav button.nav-button.active {
     font-weight: 300; line-height: 22px; text-align: center; margin-bottom: 8px;
 }
 .daily-match-title #dailyMatchTeams { font-weight: 500; }
+/* Кнопки П1/Х/П2 для прогнозу будуть використовувати клас .tab-button і .prediction-choice-tab */
+.tab-button.prediction-choice-tab:disabled { /* Стиль для заблокованих табів прогнозу */
+    background: rgba(255, 255, 255, 0.1); 
+    color: rgba(255, 255, 255, 0.4);
+    cursor: not-allowed;
+    transform: none; /* Прибираємо анімацію для заблокованих */
+}
+.tab-button.prediction-choice-tab:disabled:hover { opacity: 1; }
 
 
 /* --- Повідомлення --- */
-.bet-confirmation .info-message.bet-placed-style,
+.bet-confirmation .info-message.bet-placed-style, /* Для синього повідомлення про ставку */
 .prediction-result .info-message.bet-placed-style {
     max-width: 353px; margin-left: auto; margin-right: auto; padding: var(--padding-message-block);
     gap: var(--gap-internal); border-radius: var(--border-radius-main);
@@ -362,14 +344,12 @@ nav button.nav-button.active {
     background-color: var(--message-error-bg-color); border-color: var(--message-error-border-color); color: #FFF; 
 }
 
-
 /* --- Футер --- */
 .user-info-footer {
     padding: 10px 15px; text-align: center; font-size: 12px;
     font-weight: 300; color: var(--text-secondary-color); word-break: break-all;
     width: 100%; box-sizing: border-box; margin-top: auto; 
-    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); 
-    /* padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); /* Якщо потрібен padding, а не margin */
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 36px); /* 36px від видимого низу */
 }
 
 /* --- Індикатор завантаження --- */
