@@ -662,31 +662,62 @@ nav button.nav-button.active {
     font-weight: 300;
     line-height: 22px; 
     margin-bottom: 16px; 
-}/* ... (попередні стилі) ... */
+}
+/* ... (попередні стилі) ... */
 
 /* --- Кнопка "Зробити ставку" --- */
 .place-bet-button-container {
-    margin-top: 16px; /* Відступ від кнопок сум/фрібету */
+    margin-top: 16px; 
     margin-bottom: 24px;
+    display: flex; /* Додано для центрування кнопки, якщо вона не на всю ширину */
+    justify-content: center; /* Центрування кнопки */
 }
 
-.place-bet-button { /* Загальний клас для кнопки "Зробити ставку" */
-    background-color: var(--accent-yellow-color) !important; /* Жовтий фон */
-    color: var(--text-dark-color) !important; /* Темний текст */
-    font-weight: 500; /* Можна зробити жирнішим */
-    width: 100%;
-    max-width: 353px; 
-    margin-left: auto;
-    margin-right: auto;
-    display: block; 
+.place-bet-button { 
+    /* Базові стилі як у кнопок сум */
+    display: flex; /* Для центрування тексту, якщо він не займає всю кнопку */
+    padding: var(--padding-button-coeffs); /* 12px 6px - як у кнопок коефіцієнтів/сум */
+    flex-direction: column; /* Якщо текст буде в кілька рядків, як у кнопок коефіцієнтів */
+    justify-content: center;
+    align-items: center;
+    /* gap: var(--gap-internal-button); - прибираємо, бо текст один рядок */
+    /* flex: 1 0 0; - прибираємо, щоб кнопка не розтягувалась, якщо не потрібно */
+    width: auto; /* Ширина по контенту + padding */
+    min-width: 150px; /* Мінімальна ширина, щоб кнопка не була надто вузькою */
+    max-width: 353px; /* Максимальна ширина, як у блоків повідомлень */
     box-sizing: border-box;
-    padding: 14px 20px; /* Трохи більший padding для головної кнопки */
+    
+    border-radius: var(--border-radius-main); /* 12px */
+    border: none; /* Без рамки, як у кнопок сум */
+
+    /* Текст як у кнопок сум */
+    font-family: var(--font-family-main);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+
+    /* Кольори */
+    background-color: var(--accent-yellow-color); /* Жовтий фон */
+    color: var(--text-dark-color); /* Темний текст */
+    
+    cursor: pointer;
+    text-align: center;
+    transition: background-color var(--transition-duration) var(--transition-timing-function), 
+                transform 0.1s ease-out; /* Анімація для transform */
 }
-/* Перевизначаємо :hover для жовтої кнопки, якщо потрібно інший ефект */
+
+/* Анімація при наведенні та натисканні */
 .place-bet-button:hover {
-    background-color: #edd62f !important; /* Трохи темніший жовтий при наведенні */
-    transform: none; /* Прибираємо scale, якщо не потрібен */
+    background-color: #edd62f; /* Трохи темніший жовтий */
+    transform: scale(1.05); /* Збільшення при наведенні */
+}
+
+.place-bet-button:active {
+    transform: scale(1.02); /* Трохи менше збільшення при натисканні */
+    background-color: #e0c92a; /* Ще трохи темніший жовтий при активному стані */
 }
 
 
 /* ... (решта стилів) ... */
+
