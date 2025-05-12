@@ -1,4 +1,3 @@
-// js/app.js
 document.addEventListener('DOMContentLoaded', () => {
     const tg = window.Telegram.WebApp;
     tg.ready();
@@ -43,12 +42,29 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     };
+
+    // Утилита для отображения сообщения о неавторизованном состоянии
+    window.showNotLoggedInMessage = function(container) {
+        if (container) {
+            container.innerHTML = '<div class="info-message notice">Будь ласка, увійдіть або зареєструйтеся, щоб переглянути цю секцію.</div>';
+        }
+    };
+
+    // Утилита для предотвращения множественных кликов
+    window.disableButtonDuringAction = function(button, action) {
+        if (button) button.disabled = true;
+        try {
+            return action();
+        } finally {
+            if (button) button.disabled = false;
+        }
+    };
     
     function updateUserLoginStateUI() {
         if (isUserLoggedInGlobally) {
             if (loggedInHeaderEl) loggedInHeaderEl.style.display = 'flex'; 
             if (loggedOutHeaderEl) loggedOutHeaderEl.style.display = 'none';
-            if (userInfoFooter) userInfoFooter.style.display = 'block'; // Або 'flex' якщо він flex-контейнер
+            if (userInfoFooter) userInfoFooter.style.display = 'block';
 
             window.currentBalances.main = 1500.00;
             window.currentBalances.bonus = 500.00;
@@ -78,11 +94,11 @@ document.addEventListener('DOMContentLoaded', () => {
             tg.showConfirm("Ви будете перенаправлені на сайт BetKing для входу або реєстрації. Продовжити?", (confirmed) => {
                 if (confirmed) {
                     tg.showAlert("Імітація переходу на сайт... Для цілей MVP, вважаємо, що ви успішно увійшли!");
-                    isUserLoggedInGlobally = true; // Змінюємо глобальну змінну
+                    isUserLoggedInGlobally = true;
                     updateUserLoginStateUI(); 
                     const currentPageUrl = localStorage.getItem('betkingActivePageUrl') || 'pages/match-of-the-day.html';
                     const currentNavId = localStorage.getItem('betkingActiveNavId') || 'navMotd';
-                    loadPage(currentPageUrl, currentNavId); // Перезавантажуємо контент сторінки
+                    loadPage(currentPageUrl, currentNavId);
                 }
             });
         });
@@ -98,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Глобальна функція для перевірки стану логіну з інших скриптів
     window.isUserCurrentlyLoggedIn = function() {
         return isUserLoggedInGlobally;
     };
@@ -110,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
     confettiScript.onerror = () => console.error('Failed to load confetti library.');
     document.head.appendChild(confettiScript);
     
-    window.getFormattedDate = function(date) { /* ... тіло функції ... */ };
     window.getFormattedDate = function(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -136,7 +150,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const oldScript = document.getElementById('pageSpecificScript');
                 if (oldScript) { oldScript.remove(); }
                 const pageScript = document.createElement('script');
-                pageScript.id = 'pageSpecificScript'; pageScript.src = scriptSrc;
+                pageScript.id = 'pageSpecificScript'; 
+                pageScript.src = scriptSrc;
                 pageScript.type = 'text/javascript'; 
                 pageScript.onload = () => {};
                 pageScript.onerror = () => console.error(`Failed to load script: ${scriptSrc}`);
@@ -145,14 +160,17 @@ document.addEventListener('DOMContentLoaded', () => {
             setActiveNavButton(targetNavButtonId);
             localStorage.setItem('betkingActivePageUrl', pageUrl);
             localStorage.setItem('betkingActiveNavId', targetNavButtonId);
-        } catch (error) { /* ... */ }
+        } catch (error) {
+            console.error('Error loading page:', error);
+            pageContentArea.innerHTML = '<div class="info-message error">Помилка завантаження сторінки. Спробуйте ще раз.</div>';
+            tg.showAlert('Не вдалося завантажити сторінку. Перевірте підключення до мережі.');
+        }
     }
 
-    function setActiveNavButton(activeButtonId) { /* ... */ }
     function setActiveNavButton(activeButtonId) {
         navButtons.forEach(button => { button.classList.toggle('active', button.id === activeButtonId); });
     }
-    navButtons.forEach(button => { /* ... */ });
+
     navButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             const pageUrl = e.currentTarget.dataset.page;
