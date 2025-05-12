@@ -1,192 +1,179 @@
-(function() {
-    const dailyContent = document.getElementById('dailyLoginContent');
-    if (!dailyContent) {
-        return;
+const tgD = window.Telegram.WebApp;
+
+tgD.ready();
+tgD.expand();
+
+// Ініціалізація змінних
+let streak = 4; // Для демо: користувач уже має 4 успішних прогнози
+let dailyBetUsed = false;
+let extraBetPurchased = false;
+let friendInvited = false;
+let matches = [
+    { id: 1, teams: ["Team A", "Team B"], type: "esport", result: null, predicted: false },
+    { id: 2, teams: ["Team C", "Team D"], type: "sport", result: null, predicted: false },
+    { id: 3, teams: ["Team E", "Team F"], type: "esport", result: null, predicted: false },
+    { id: 4, teams: ["Team G", "Team H"], type: "sport", result: null, predicted: false },
+    { id: 5, teams: ["Team I", "Team J"], type: "esport", result: null, predicted: false }
+];
+
+// Зберігання стану через localStorage
+function saveState() {
+    localStorage.setItem('streak', streak);
+    localStorage.setItem('dailyBetUsed', dailyBetUsed);
+    localStorage.setItem('extraBetPurchased', extraBetPurchased);
+    localStorage.setItem('friendInvited', friendInvited);
+    localStorage.setItem('matches', JSON.stringify(matches));
+    localStorage.setItem('lastLoginDate', new Date().toISOString().split('T')[0]);
+}
+
+function loadState() {
+    const lastLogin = localStorage.getItem('lastLoginDate');
+    const today = new Date().toISOString().split('T')[0];
+    if (lastLogin !== today) {
+        // Скидаємо щоденні параметри при новому дні
+        dailyBetUsed = false;
+        extraBetPurchased = false;
+        friendInvited = false;
+        matches.forEach(match => {
+            match.result = null;
+            match.predicted = false;
+        });
+    } else {
+        streak = parseInt(localStorage.getItem('streak')) || 4; // Для демо
+        dailyBetUsed = localStorage.getItem('dailyBetUsed') === 'true';
+        extraBetPurchased = localStorage.getItem('extraBetPurchased') === 'true';
+        friendInvited = localStorage.getItem('friendInvited') === 'true';
+        matches = JSON.parse(localStorage.getItem('matches')) || matches;
     }
+}
 
-    if (typeof window.isUserCurrentlyLoggedIn !== 'function' || !window.isUserCurrentlyLoggedIn()) {
-        window.showNotLoggedInMessage(dailyContent);
-        return; 
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    const progressCircles = document.getElementById('progressCircles');
+    const progressText = document.getElementById('progressText');
+    const matchList = document.getElementById('matchList');
+    const extraBetButton = document.getElementById('extraBetButton');
+    const shareButton = document.getElementById('shareButton');
+    const rewardMessage = document.getElementById('rewardMessage');
 
-    const tgD = window.Telegram.WebApp;
-    const getFormattedDate = window.getFormattedDate;
-    const TODAY_STRING = window.TODAY_STRING;
-
-    // Дані про поточний "щоденний матч"
-    const currentDailyMatch = {
-        key: `dailyMatch_${TODAY_STRING}`,
-        team1: "Колос Ковалівка",
-        team2: "ЛНЗ Черкаси",
-        options: {
-            p1: { name: "П1", description: "Перемога Колос" },
-            x:  { name: "X", description: "Нічия" },
-            p2: { name: "П2", description: "Перемога ЛНЗ" }
-        },
-        correctOutcome: "x" 
-    };
-
-    // Стан, що зберігається в localStorage
-    const dailyLoginState = {
-        currentStreak: 0,
-        pendingPrediction: null,
-        lastSettledDate: null
-    };
-
-    const currentStreakEl = dailyContent.querySelector('#currentStreak');
-    const dailyMatchTeamsEl = dailyContent.querySelector('#dailyMatchTeams');
-    const dailyPredictionOptionsEl = dailyContent.querySelector('#dailyPredictionOptions');
-    const dailyPredictionResultEl = dailyContent.querySelector('#dailyPredictionResult');
-
-    function loadState() {
-        const savedStreak = localStorage.getItem('betkingDailyStreak_v2');
-        const savedPendingPrediction = localStorage.getItem('betkingPendingPrediction_v2');
-        const savedLastSettledDate = localStorage.getItem('betkingLastSettledDate_v2');
-
-        if (savedStreak !== null) {
-            dailyLoginState.currentStreak = parseInt(savedStreak, 10);
-        }
-        if (savedPendingPrediction !== null) {
-            try {
-                dailyLoginState.pendingPrediction = JSON.parse(savedPendingPrediction);
-            } catch (e) {
-                console.error("Error parsing pending prediction:", e);
-                dailyLoginState.pendingPrediction = null;
-            }
-        }
-        if (savedLastSettledDate !== null) {
-            dailyLoginState.lastSettledDate = savedLastSettledDate;
-        }
-        currentStreakEl.textContent = dailyLoginState.currentStreak;
-    }
-
-    function saveState() {
-        localStorage.setItem('betkingDailyStreak_v2', dailyLoginState.currentStreak);
-        if (dailyLoginState.pendingPrediction) {
-            localStorage.setItem('betkingPendingPrediction_v2', JSON.stringify(dailyLoginState.pendingPrediction));
-        } else {
-            localStorage.removeItem('betkingPendingPrediction_v2');
-        }
-        if (dailyLoginState.lastSettledDate) {
-            localStorage.setItem('betkingLastSettledDate_v2', dailyLoginState.lastSettledDate);
-        } else {
-            localStorage.removeItem('betkingLastSettledDate_v2');
-        }
-    }
-
-    function settlePendingPrediction() {
-        let message = "";
-        let messageClass = "notice";
-
-        if (dailyLoginState.pendingPrediction) {
-            const prediction = dailyLoginState.pendingPrediction;
-            if (prediction.dateMade < TODAY_STRING) {
-                const actualOutcome = currentDailyMatch.correctOutcome;
-                const isCorrect = prediction.predictedOutcome === actualOutcome;
-                
-                message = `Результат вашого прогнозу від ${prediction.dateMade} на матч (${prediction.matchKey.substring(11)}):\nВи обрали "${currentDailyMatch.options[prediction.predictedOutcome]?.description || 'невідомо'}". `;
-
-                if (isCorrect) {
-                    message += "Це ПРАВИЛЬНО! ✅";
-                    messageClass = 'success';
-                    
-                    const predictionDate = new Date(prediction.dateMade);
-                    const dayBeforePrediction = new Date(predictionDate);
-                    dayBeforePrediction.setDate(predictionDate.getDate() - 1);
-
-                    if (dailyLoginState.lastSettledDate === getFormattedDate(dayBeforePrediction)) {
-                        dailyLoginState.currentStreak++;
-                    } else {
-                        dailyLoginState.currentStreak = 1;
-                    }
-                    tgD.HapticFeedback.notificationOccurred('success');
-                    if (window.confetti) { window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, zIndex: 10000 }); }
-                } else {
-                    message += "На жаль, НЕПРАВИЛЬНО. ❌";
-                    messageClass = 'error';
-                    dailyLoginState.currentStreak = 0;
-                    tgD.HapticFeedback.notificationOccurred('error');
-                }
-
-                dailyLoginState.lastSettledDate = prediction.dateMade;
-                dailyLoginState.pendingPrediction = null;
-                saveState();
-                currentStreakEl.textContent = dailyLoginState.currentStreak;
-
-                // Перевірка нагород
-                const rewards = {
-                    3: { name: "Фрібет 100 ₴", amount: 100 },
-                    7: { name: "Фрібет 250 ₴", amount: 250 },
-                    10: { name: "Фрібет 500 ₴", amount: 500 }
-                };
-                if (isCorrect && rewards[dailyLoginState.currentStreak]) {
-                    const reward = rewards[dailyLoginState.currentStreak];
-                    message += `\n🎉 Вітаємо! Ви виграли ${reward.name} за ${dailyLoginState.currentStreak} правильних прогнозів поспіль!`;
-                    window.currentBalances.freebets += 1;
-                    window.currentBalances.freebetAmount = reward.amount;
-                    window.updateBalanceDisplay();
-                }
-                dailyPredictionResultEl.innerHTML = `<div class="info-message ${messageClass}">${message.replace(/\n/g, "<br>")}</div>`;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function displayDailyOffer() {
-        if (!dailyMatchTeamsEl || !dailyPredictionOptionsEl || !dailyPredictionResultEl) {
-            console.error('Daily DOM elements not found for display offer.');
-            return;
-        }
-        
-        currentStreakEl.textContent = dailyLoginState.currentStreak;
-        dailyMatchTeamsEl.textContent = `${currentDailyMatch.team1} - ${currentDailyMatch.team2}`;
-        dailyPredictionOptionsEl.innerHTML = '';
-
-        const hasActivePredictionForToday = dailyLoginState.pendingPrediction && dailyLoginState.pendingPrediction.dateMade === TODAY_STRING;
-
-        if (hasActivePredictionForToday) {
-            dailyPredictionResultEl.innerHTML = `<div class="info-message notice">Ваш прогноз на сьогоднішній матч (${currentDailyMatch.team1} vs ${currentDailyMatch.team2}) прийнято. Результат буде відомий пізніше.</div>`;
-            dailyPredictionOptionsEl.innerHTML = '';
-        } else {
-            if (!dailyPredictionResultEl.innerHTML.includes('Результат вашого прогнозу')) {
-                dailyPredictionResultEl.innerHTML = `<div class="info-message notice">Зробіть свій прогноз на сьогоднішній матч!</div>`;
-            }
-
-            for (const key in currentDailyMatch.options) {
-                const option = currentDailyMatch.options[key];
-                const button = document.createElement('button');
-                button.className = 'tab-button prediction-choice-tab';
-                button.dataset.key = key;
-                button.textContent = option.name;
-                button.title = option.description;
-                button.addEventListener('click', handleDailyPrediction);
-                dailyPredictionOptionsEl.appendChild(button);
-            }
-        }
-    }
-
-    function handleDailyPrediction(event) {
-        if (dailyLoginState.pendingPrediction && dailyLoginState.pendingPrediction.dateMade === TODAY_STRING) {
-            tgD.showAlert("Ви вже зробили прогноз на сьогодні!");
-            return;
-        }
-
-        const predictedKey = event.currentTarget.dataset.key;
-        
-        dailyLoginState.pendingPrediction = {
-            matchKey: currentDailyMatch.key,
-            predictedOutcome: predictedKey,
-            dateMade: TODAY_STRING
-        };
-        saveState();
-
-        dailyPredictionResultEl.innerHTML = `<div class="info-message success">Ваш прогноз на матч ${currentDailyMatch.team1} - ${currentDailyMatch.team2} (${currentDailyMatch.options[predictedKey].description}) прийнято! Результат буде відомий пізніше.</div>`;
-        dailyPredictionOptionsEl.querySelectorAll('.tab-button').forEach(btn => btn.disabled = true);
-        tgD.HapticFeedback.impactOccurred('light');
-    }
-    
+    // Завантаження стану
     loadState();
-    const settled = settlePendingPrediction();
-    displayDailyOffer();
-})();
+
+    // Відображення прогресу (10 кружків)
+    function displayProgress() {
+        progressCircles.innerHTML = '';
+        for (let i = 0; i < 10; i++) {
+            const circle = document.createElement('div');
+            circle.className = 'progress-circle' + (i < streak ? ' filled' : '');
+            progressCircles.appendChild(circle);
+        }
+        progressText.textContent = `Прогрес: ${streak}/10 успішних прогнозів`;
+    }
+
+    // Відображення списку матчів
+    function displayMatches() {
+        matchList.innerHTML = '';
+        matches.forEach(match => {
+            const matchItem = document.createElement('div');
+            matchItem.className = 'match-item';
+            let optionsHtml = `
+                <button ${match.predicted ? 'disabled' : ''} onclick="selectOption(${match.id}, '${match.teams[0]}')">${match.teams[0]}</button>
+                ${match.type === 'sport' ? `<button ${match.predicted ? 'disabled' : ''} onclick="selectOption(${match.id}, 'Нічия')">Нічия</button>` : ''}
+                <button ${match.predicted ? 'disabled' : ''} onclick="selectOption(${match.id}, '${match.teams[1]}')">${match.teams[1]}</button>
+            `;
+            matchItem.innerHTML = `
+                <h3>${match.teams[0]} vs ${match.teams[1]}</h3>
+                <div class="options" id="options-${match.id}">
+                    ${optionsHtml}
+                </div>
+            `;
+            matchList.appendChild(matchItem);
+        });
+    }
+
+    // Вибір опції для прогнозу
+    window.selectOption = (matchId, option) => {
+        if (dailyBetUsed && !extraBetPurchased && !friendInvited) {
+            tgD.showAlert('Ви вже зробили безкоштовний прогноз сьогодні! Додатковий прогноз коштує 50 грн або запросіть друга.');
+            return;
+        }
+
+        const match = matches.find(m => m.id === matchId);
+        if (match.predicted) {
+            tgD.showAlert('Ви вже зробили прогноз для цього матчу!');
+            return;
+        }
+
+        match.result = option;
+        match.predicted = true;
+
+        // Імітація результату матчу (для демо)
+        const correctResult = match.type === 'sport' ? (Math.random() > 0.66 ? match.teams[0] : Math.random() > 0.33 ? 'Нічия' : match.teams[1]) : (Math.random() > 0.5 ? match.teams[0] : match.teams[1]);
+        
+        if (option === correctResult) {
+            streak++;
+            tgD.showAlert(`Вітаємо! Ви вгадали переможця! Ваш стрік: ${streak}`);
+            if (streak === 3) {
+                rewardMessage.textContent = 'Вітаємо! Ви отримали приз за 3 успішних прогнози!';
+            } else if (streak === 7) {
+                rewardMessage.textContent = 'Чудово! Ви отримали приз за 7 успішних прогнозів!';
+            } else if (streak === 10) {
+                rewardMessage.textContent = 'Вітаємо! Ви отримали FreeBet на 250 грн за 10 успішних прогнозів!';
+                streak = 0; // Скидання стріка
+            }
+        } else {
+            streak = 0;
+            tgD.showAlert('На жаль, ви не вгадали переможця. Спробуйте ще раз завтра!');
+        }
+
+        dailyBetUsed = true;
+        extraBetPurchased = false; // Скидаємо після прогнозу
+        friendInvited = false; // Скидаємо після прогнозу
+        saveState();
+        displayProgress();
+        displayMatches();
+    };
+
+    // Додатковий прогноз за 50 грн
+    extraBetButton.addEventListener('click', () => {
+        if (dailyBetUsed && !extraBetPurchased) {
+            tgD.showConfirm("Додатковий прогноз коштує 50 грн. Продовжити?", (confirmed) => {
+                if (confirmed) {
+                    tgD.showAlert("Імітація оплати 50 грн... (для MVP). Додатковий прогноз активовано!");
+                    extraBetPurchased = true;
+                    saveState();
+                }
+            });
+        } else if (extraBetPurchased) {
+            tgD.showAlert("Ви вже використали додатковий прогноз за гроші!");
+        } else {
+            tgD.showAlert("Ви ще не використали свій безкоштовний прогноз!");
+        }
+    });
+
+    // Запрошення друга
+    shareButton.addEventListener('click', () => {
+        if (dailyBetUsed && !friendInvited) {
+            const shareText = "Привіт! Приєднуйся до BetKing — роби прогнози на матчі та отримуй FreeBets! 🚀 Це MVP, реєстрація не потрібна.";
+            tgD.showPopup({
+                title: "Запросити друга",
+                message: "Відправити запрошення через Telegram?",
+                buttons: [{ id: "share", type: "default", text: "Відправити" }]
+            }, (buttonId) => {
+                if (buttonId === "share") {
+                    tgD.sendData(JSON.stringify({ action: "share", text: shareText }));
+                    tgD.showAlert("Запрошення відправлено! Ви та ваш друг отримали додатковий безкоштовний прогноз!");
+                    friendInvited = true;
+                    saveState();
+                }
+            });
+        } else if (friendInvited) {
+            tgD.showAlert("Ви вже запросили друга сьогодні!");
+        } else {
+            tgD.showAlert("Ви ще не використали свій безкоштовний прогноз!");
+        }
+    });
+
+    // Ініціалізація
+    displayProgress();
+    displayMatches();
+});

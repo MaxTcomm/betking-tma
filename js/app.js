@@ -185,9 +185,29 @@ document.addEventListener('DOMContentLoaded', () => {
             else { console.warn('Nav button missing data-page or value empty:', e.currentTarget); }
         });
     });
-    
-    updateUserLoginStateUI(); 
-    const lastActivePageUrl = localStorage.getItem('betkingActivePageUrl') || 'pages/match-of-the-day.html';
-    const lastActiveNavId = localStorage.getItem('betkingActiveNavId') || 'navMotd';
-    loadPage(lastActivePageUrl, lastActiveNavId); 
+
+    // Обробка параметра startapp для глибоких посилань
+    const initData = tg.initDataUnsafe;
+    const startParam = initData.start_param || '';
+
+    // Вибір сторінки залежно від параметра startapp
+    let initialPageUrl = 'pages/match-of-the-day.html';
+    let initialNavId = 'navMotd';
+
+    if (startParam === 'forecast') {
+        initialPageUrl = 'pages/daily-login.html';
+        initialNavId = 'navDaily';
+    } else if (startParam === 'match') {
+        initialPageUrl = 'pages/match-of-the-day.html';
+        initialNavId = 'navMotd';
+    } else if (startParam === 'express') {
+        initialPageUrl = 'pages/express-of-the-day.html';
+        initialNavId = 'navEotd';
+    }
+
+    // Завантажуємо сторінку
+    updateUserLoginStateUI();
+    const lastActivePageUrl = localStorage.getItem('betkingActivePageUrl') || initialPageUrl;
+    const lastActiveNavId = localStorage.getItem('betkingActiveNavId') || initialNavId;
+    loadPage(lastActivePageUrl, lastActiveNavId);
 });

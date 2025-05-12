@@ -1,4 +1,4 @@
-/* css/style.css - Повна оновлена версія з виправленнями */
+/* css/style.css - Повна оновлена версія з виправленнями та новими стилями */
 
 :root {
     /* Кольори */
@@ -512,6 +512,32 @@ nav button.nav-button.active {
 .accept-express-button-container { margin-bottom: 24px; }
 
 /* --- Стилі для сторінки "Щоденний Прогноз" --- */
+.streak-progress {
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.streak-circles {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.streak-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--text-secondary-color);
+    transition: background-color var(--transition-duration) var(--transition-timing-function);
+}
+
+.streak-circle.filled {
+    background-color: var(--accent-yellow-color);
+    border-color: var(--accent-yellow-color);
+}
+
 .streak-info,
 .rewards-info {
     color: var(--text-secondary-color);
@@ -528,6 +554,96 @@ nav button.nav-button.active {
 .rewards-info { margin-bottom: 20px; font-style: italic; }
 
 .streak-info #currentStreak { color: var(--accent-yellow-color); font-weight: 500; }
+
+.attempts-info {
+    margin-bottom: 20px;
+    text-align: center;
+    color: var(--text-secondary-color);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 18px;
+}
+
+.attempts-options {
+    margin-top: 8px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.secondary-button {
+    display: flex;
+    padding: 10px 16px;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--border-radius-main);
+    border: 1px solid var(--text-secondary-color);
+    background: transparent;
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    cursor: pointer;
+    transition: background-color var(--transition-duration) var(--transition-timing-function),
+                transform var(--transition-transform-duration) var(--transition-timing-function);
+}
+
+.secondary-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.03);
+}
+
+.secondary-button:active {
+    transform: scale(0.98);
+}
+
+.match-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.match-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-radius: var(--border-radius-main);
+    border: 1px solid var(--express-card-border-color);
+    background: var(--express-card-bg-color);
+    cursor: pointer;
+    transition: background-color var(--transition-duration) var(--transition-timing-function);
+}
+
+.match-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.match-item.selected {
+    border-color: var(--accent-yellow-color);
+    background: rgba(255, 228, 51, 0.1);
+}
+
+.match-item .match-teams {
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 22px;
+    flex-grow: 1;
+}
+
+.match-item .match-type {
+    color: var(--text-secondary-color);
+    font-family: var(--font-family-main);
+    font-size: 12px;
+    font-weight: 200;
+    line-height: 16px;
+    margin-left: 8px;
+}
 
 .daily-match-title {
     color: var(--text-primary-color);
@@ -652,4 +768,106 @@ nav button.nav-button.active {
 
 .hidden {
     display: none !important;
+}
+
+.daily-login-container {
+    padding: 20px;
+    background-color: #1a1a1a;
+    color: #fff;
+}
+
+.progress-bar {
+    margin-bottom: 20px;
+}
+
+.progress-circles {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.progress-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #333;
+    border: 2px solid #555;
+}
+
+.progress-circle.filled {
+    background-color: #ffcc00;
+    border-color: #ffcc00;
+}
+
+#progressText {
+    text-align: center;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.match-list {
+    margin-bottom: 20px;
+}
+
+.match-item {
+    background-color: #222;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.match-item h3 {
+    font-size: 16px;
+    margin: 0 0 10px;
+}
+
+.match-item .options {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.match-item button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.match-item button:hover {
+    background-color: #ffcc00;
+    color: #000;
+}
+
+.match-item button.selected {
+    background-color: #ffcc00;
+    color: #000;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.share-button {
+    background-color: #ffcc00;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.share-button:hover {
+    background-color: #e6b800;
+}
+
+.reward-message {
+    margin-top: 10px;
+    text-align: center;
+    color: #ffcc00;
 }

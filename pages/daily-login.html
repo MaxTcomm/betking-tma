@@ -1,12 +1,13 @@
-<div id="dailyLoginContent">
-    <h2>Щоденний Прогноз</h2>
-    <div class="section-block">
-        <p class="streak-info">Ваша поточна серія перемог: <span id="currentStreak">0</span></p>
-        <p class="rewards-info">Нагороди: 3 дні - фрібет 100 ₴, 7 днів - фрібет 250 ₴, 10 днів - фрібет 500 ₴.</p>
-        <div id="dailyMatchInfo">
-            <p class="daily-match-title">Матч на сьогодні: <span id="dailyMatchTeams"></span></p>
-            <div id="dailyPredictionOptions" class="prediction-options"></div>
-        </div>
-        <div id="dailyPredictionResult" class="prediction-result"></div>
+<div class="daily-login-container">
+    <h2>Щоденний прогноз</h2>
+    <div class="progress-bar">
+        <div class="progress-circles" id="progressCircles"></div>
+        <p id="progressText">Прогрес: 4/10 успішних прогнозів</p>
     </div>
+    <div class="match-list" id="matchList"></div>
+    <div class="action-buttons">
+        <button id="extraBetButton" class="extra-bet-button">Додатковий прогноз (50 грн)</button>
+        <button id="shareButton" class="share-button">Запросити друга</button>
+    </div>
+    <div id="rewardMessage" class="reward-message"></div>
 </div>
