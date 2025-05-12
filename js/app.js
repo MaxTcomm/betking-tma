@@ -61,10 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     function updateUserLoginStateUI() {
+        if (!loggedInHeaderEl || !loggedOutHeaderEl || !userInfoFooter) {
+            console.error('Header or footer elements not found during updateUserLoginStateUI');
+            return;
+        }
+
         if (isUserLoggedInGlobally) {
-            if (loggedInHeaderEl) loggedInHeaderEl.style.display = 'flex'; 
-            if (loggedOutHeaderEl) loggedOutHeaderEl.style.display = 'none';
-            if (userInfoFooter) userInfoFooter.style.display = 'block';
+            loggedInHeaderEl.classList.remove('hidden');
+            loggedOutHeaderEl.classList.add('hidden');
+            userInfoFooter.classList.remove('hidden');
 
             window.currentBalances.main = 1500.00;
             window.currentBalances.bonus = 500.00;
@@ -73,14 +78,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 const user = tg.initDataUnsafe.user;
-                if (userInfoFooter) userInfoFooter.innerHTML = `Користувач: ${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'N/A'}, ID: ${user.id})`;
+                userInfoFooter.innerHTML = `Користувач: ${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'N/A'}, ID: ${user.id})`;
             } else {
-                if (userInfoFooter) userInfoFooter.textContent = "Користувач: Demo User";
+                userInfoFooter.textContent = "Користувач: Demo User";
             }
         } else {
-            if (loggedInHeaderEl) loggedInHeaderEl.style.display = 'none';
-            if (loggedOutHeaderEl) loggedOutHeaderEl.style.display = 'flex';
-            if (userInfoFooter) userInfoFooter.style.display = 'none';
+            loggedInHeaderEl.classList.add('hidden');
+            loggedOutHeaderEl.classList.remove('hidden');
+            userInfoFooter.classList.add('hidden');
 
             window.currentBalances.main = 0.00;
             window.currentBalances.bonus = 0.00;
@@ -95,10 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (confirmed) {
                     tg.showAlert("Імітація переходу на сайт... Для цілей MVP, вважаємо, що ви успішно увійшли!");
                     isUserLoggedInGlobally = true;
-                    updateUserLoginStateUI(); 
                     const currentPageUrl = localStorage.getItem('betkingActivePageUrl') || 'pages/match-of-the-day.html';
                     const currentNavId = localStorage.getItem('betkingActiveNavId') || 'navMotd';
-                    loadPage(currentPageUrl, currentNavId);
+                    loadPage(currentPageUrl, currentNavId).then(() => {
+                        updateUserLoginStateUI();
+                    });
                 }
             });
         });
