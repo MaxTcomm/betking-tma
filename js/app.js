@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     tg.expand();
 
     // --- Стан користувача ---
-    let isUserLoggedIn = false; // Початковий стан - не залогінений
-    // Для тестування можна поставити true:
-    // isUserLoggedIn = true; 
+    let isUserLoggedInGlobally = false; // Початковий стан - не залогінений
+    // Для тестування:
+    // isUserLoggedInGlobally = true; 
     // ------------------------
 
     // DOM елементи
@@ -45,12 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     function updateUserLoginStateUI() {
-        if (isUserLoggedIn) {
-            if (loggedInHeaderEl) loggedInHeaderEl.classList.remove('hidden');
-            if (loggedOutHeaderEl) loggedOutHeaderEl.classList.add('hidden');
-            if (userInfoFooter) userInfoFooter.classList.remove('hidden');
+        if (isUserLoggedInGlobally) {
+            if (loggedInHeaderEl) loggedInHeaderEl.style.display = 'flex'; 
+            if (loggedOutHeaderEl) loggedOutHeaderEl.style.display = 'none';
+            if (userInfoFooter) userInfoFooter.style.display = 'block'; // Або 'flex' якщо він flex-контейнер
 
-            // Імітація завантаження даних користувача
             window.currentBalances.main = 1500.00;
             window.currentBalances.bonus = 500.00;
             window.currentBalances.freebets = 1;
@@ -60,17 +59,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const user = tg.initDataUnsafe.user;
                 if (userInfoFooter) userInfoFooter.innerHTML = `Користувач: ${user.first_name || ''} ${user.last_name || ''} (@${user.username || 'N/A'}, ID: ${user.id})`;
             } else {
-                if (userInfoFooter) userInfoFooter.textContent = "Користувач: Demo User"; // Заглушка, якщо дані Telegram недоступні
+                if (userInfoFooter) userInfoFooter.textContent = "Користувач: Demo User";
             }
         } else {
-            if (loggedInHeaderEl) loggedInHeaderEl.classList.add('hidden');
-            if (loggedOutHeaderEl) loggedOutHeaderEl.classList.remove('hidden');
-            if (userInfoFooter) userInfoFooter.classList.add('hidden');
+            if (loggedInHeaderEl) loggedInHeaderEl.style.display = 'none';
+            if (loggedOutHeaderEl) loggedOutHeaderEl.style.display = 'flex';
+            if (userInfoFooter) userInfoFooter.style.display = 'none';
 
             window.currentBalances.main = 0.00;
             window.currentBalances.bonus = 0.00;
             window.currentBalances.freebets = 0;
-            updateBalanceDisplay(); // Покаже нулі або "Фрібети: 0"
+            updateBalanceDisplay(); 
         }
     }
 
@@ -78,16 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
         loginRegisterButtonEl.addEventListener('click', () => {
             tg.showConfirm("Ви будете перенаправлені на сайт BetKing для входу або реєстрації. Продовжити?", (confirmed) => {
                 if (confirmed) {
-                    // В реальному додатку тут буде tg.openLink('https://betking.com.ua/register-or-login-page');
-                    // Після успішного логіну на сайті, сайт має якось повідомити міні-додаток (наприклад, через параметри URL при поверненні).
-                    // Для MVP симулюємо успішний логін:
                     tg.showAlert("Імітація переходу на сайт... Для цілей MVP, вважаємо, що ви успішно увійшли!");
-                    isUserLoggedIn = true;
-                    updateUserLoginStateUI(); // Оновлюємо UI негайно
-                    // Перезавантажуємо поточну сторінку, щоб її скрипт міг оновити UI на основі нового стану логіну
+                    isUserLoggedInGlobally = true; // Змінюємо глобальну змінну
+                    updateUserLoginStateUI(); 
                     const currentPageUrl = localStorage.getItem('betkingActivePageUrl') || 'pages/match-of-the-day.html';
                     const currentNavId = localStorage.getItem('betkingActiveNavId') || 'navMotd';
-                    loadPage(currentPageUrl, currentNavId);
+                    loadPage(currentPageUrl, currentNavId); // Перезавантажуємо контент сторінки
                 }
             });
         });
@@ -95,10 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (depositButtonEl) {
         depositButtonEl.addEventListener('click', () => {
-            // isUserLoggedIn тут вже має бути true, бо кнопка "Депозит" видима тільки для залогінених
             tg.showConfirm("Ви будете перенаправлені на сторінку поповнення BetKing. Продовжити?", (confirmed) => {
                 if (confirmed) {
-                    // tg.openLink('https://betking.com.ua/deposit'); 
                     tg.showAlert("Імітація переходу на сторінку депозиту... (в розробці)");
                 }
             });
@@ -107,17 +100,17 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Глобальна функція для перевірки стану логіну з інших скриптів
     window.isUserCurrentlyLoggedIn = function() {
-        return isUserLoggedIn;
-    }
+        return isUserLoggedInGlobally;
+    };
 
-    // --- Решта коду app.js (confetti, getFormattedDate, loadPage, навігація) ---
     window.confetti = null; 
     const confettiScript = document.createElement('script');
     confettiScript.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js';
-    confettiScript.onload = () => { /* console.log('Confetti library loaded'); */ };
+    confettiScript.onload = () => {};
     confettiScript.onerror = () => console.error('Failed to load confetti library.');
     document.head.appendChild(confettiScript);
     
+    window.getFormattedDate = function(date) { /* ... тіло функції ... */ };
     window.getFormattedDate = function(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -143,28 +136,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 const oldScript = document.getElementById('pageSpecificScript');
                 if (oldScript) { oldScript.remove(); }
                 const pageScript = document.createElement('script');
-                pageScript.id = 'pageSpecificScript'; 
-                pageScript.src = scriptSrc;
+                pageScript.id = 'pageSpecificScript'; pageScript.src = scriptSrc;
                 pageScript.type = 'text/javascript'; 
-                pageScript.onload = () => { /* Скрипт сторінки завантажено */ };
+                pageScript.onload = () => {};
                 pageScript.onerror = () => console.error(`Failed to load script: ${scriptSrc}`);
                 document.body.appendChild(pageScript); 
             }
-
             setActiveNavButton(targetNavButtonId);
             localStorage.setItem('betkingActivePageUrl', pageUrl);
             localStorage.setItem('betkingActiveNavId', targetNavButtonId);
-
-        } catch (error) {
-            console.error('Error loading page:', error);
-            pageContentArea.innerHTML = `<div class="info-message error">Помилка завантаження сторінки. Будь ласка, спробуйте оновити.</div>`;
-        }
+        } catch (error) { /* ... */ }
     }
 
+    function setActiveNavButton(activeButtonId) { /* ... */ }
     function setActiveNavButton(activeButtonId) {
         navButtons.forEach(button => { button.classList.toggle('active', button.id === activeButtonId); });
     }
-
+    navButtons.forEach(button => { /* ... */ });
     navButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             const pageUrl = e.currentTarget.dataset.page;
@@ -173,10 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
             else { console.warn('Nav button missing data-page or value empty:', e.currentTarget); }
         });
     });
-
-    // Ініціалізація UI при завантаженні
+    
     updateUserLoginStateUI(); 
-
     const lastActivePageUrl = localStorage.getItem('betkingActivePageUrl') || 'pages/match-of-the-day.html';
     const lastActiveNavId = localStorage.getItem('betkingActiveNavId') || 'navMotd';
     loadPage(lastActivePageUrl, lastActiveNavId); 

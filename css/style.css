@@ -64,9 +64,33 @@ body {
 
 /* --- Хедер --- */
 .main-header {
-    padding: 16px 15px; display: flex;
-    justify-content: space-between; align-items: center; /* Важливо для вирівнювання висоти */
+    padding: 16px 15px; 
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch; /* ЗМІНА: Щоб дочірні елементи могли розтягнутися по висоті */
+    min-height: 58px; /* Приблизна мінімальна висота, щоб вмістити баланси та кнопку */
+    box-sizing: border-box;
 }
+
+#loggedInHeader {
+    display: flex; 
+    justify-content: space-between;
+    align-items: center; /* Залишаємо align-items: center для вмісту */
+    width: 100%;
+    /* min-height та інші властивості успадковуються або не потрібні */
+}
+/* Клас hidden залишається для керування видимістю з JS */
+#loggedInHeader.hidden { display: none !important; }
+
+
+#loggedOutHeader {
+    display: flex; 
+    width: 100%;
+    justify-content: center;
+    align-items: center; /* Щоб кнопка була по центру, якщо хедер вищий */
+}
+#loggedOutHeader.hidden { display: none !important; }
+
 .balance-info { text-align: left; }
 .balance-info p.balance-line { /* Додав клас для кращого керування */
     margin: 1px 0; font-family: var(--font-family-main); font-size: 14px;
@@ -185,9 +209,19 @@ nav button.nav-button.active {
 
 /* --- Кнопка "Зробити ставку" --- */
 .place-bet-button-container {
-    margin-top: 32px; margin-bottom: 24px;
-    display: flex; justify-content: center; 
+    margin-top: 32px; 
+    margin-bottom: 16px; /* ЗМЕНШЕНО: Даємо місце для повідомлення про ставку */
+    display: flex; 
+    justify-content: center; 
 }
+.place-bet-button-container.hidden { display: none !important; }
+
+.bet-confirmation {
+    margin-top: 16px; /* ДОДАНО: Відступ від кнопки "Зробити ставку" або від блоку вибору сум */
+    margin-bottom: 24px; /* Додаємо відступ знизу */
+    min-height: 60px; 
+}
+
 .place-bet-button { 
     display: flex; justify-content: center; align-items: center;
     width: 100%; height: 56px; padding: 0 20px; box-sizing: border-box;
