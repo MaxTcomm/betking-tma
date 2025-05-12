@@ -1,5 +1,6 @@
 // js/eotd.js
 (function() {
+    // ... (весь код до функції handleEotdStakeSelection залишається тим самим, що я надавав для eotd.js) ...
     const eotdContent = document.getElementById('expressOfTheDayContent');
     if (!eotdContent) { return; }
 
@@ -9,28 +10,26 @@
     const confetti = window.confetti;
     const getFormattedDate = window.getFormattedDate;
 
-    let expressOfTheDayData = {
-        pageTitleDate: `Експрес дня • ${getFormattedDate(new Date())}`,
-        selections: [
-            // Демо-дані, ID тепер важливий
+    let expressOfTheDayData = { /* ... дані як раніше ... */ };
+     expressOfTheDayData.pageTitleDate = `Експрес дня • ${getFormattedDate(new Date())}`;
+     expressOfTheDayData.selections = [
             { id: `sel_${Date.now()}_1`, teams: "Динамо Київ VS Шахтар Донецьк", datetime: `${getFormattedDate(new Date())} • 19:00`, market: "1X2 - Підвищені коефіцієнти", outcomeName: "Динамо Київ", odds: 1.59 },
             { id: `sel_${Date.now()}_2`, teams: "Манчестер Сіті VS Арсенал", datetime: `${getFormattedDate(new Date(Date.now() + 86400000))} • 22:00`, market: "Результат матчу", outcomeName: "Манчестер Сіті", odds: 1.85 },
             { id: `sel_${Date.now()}_3`, teams: "Баварія Мюнхен VS Боруссія Д", datetime: `${getFormattedDate(new Date(Date.now() + 2*86400000))} • 21:30`, market: "Тотал голів", outcomeName: "Більше 2.5", odds: 1.60 },
-        ],
-        stakeAmounts: [100, 200, 500]
-    };
+            { id: `sel_${Date.now()}_4`, teams: "Реал Мадрид VS Барселона", datetime: `${getFormattedDate(new Date(Date.now() + 3*86400000))} • 22:00`, market: "Обидві заб'ють", outcomeName: "Так", odds: 1.70 },
+        ];
+    expressOfTheDayData.stakeAmounts = [100, 200, 500];
+
 
     let currentTotalOdds = 0;
-    let currentTotalStake = 0;
-    let eotdSelectedStakeTypeOrAmount = null; // Зберігаємо обрану суму/фрібет для експресу
+    let currentTotalStake = 0; 
+    let eotdSelectedStakeTypeOrAmount = null; 
 
-    // DOM-елементи
     const eotdPageTitleEl = eotdContent.querySelector('#eotdPageTitle');
     const expressCardsListEl = eotdContent.querySelector('#expressCardsList');
     const eotdTotalOddsValueEl = eotdContent.querySelector('#eotdTotalOddsValue');
     const eotdTotalStakeValueEl = eotdContent.querySelector('#eotdTotalStakeValue');
     const eotdTotalWinningsValueEl = eotdContent.querySelector('#eotdTotalWinningsValue');
-    
     const eotdStakeOptionsAreaEl = eotdContent.querySelector('#eotdStakeOptionsArea');
     const eotdStakeTitleEl = eotdContent.querySelector('#eotdStakeTitle');
     const eotdStakeTabsSumContainerEl = eotdContent.querySelector('#eotdStakeTabsSumContainer');
@@ -39,44 +38,51 @@
     const eotdExecuteBetButtonEl = eotdPlaceBetButtonContainerEl ? eotdPlaceBetButtonContainerEl.querySelector('#eotdExecuteBetButton') : null;
     const eotdBetConfirmationEl = eotdContent.querySelector('#eotdBetConfirmation');
 
+
+    function calculateTotalOdds() { /* ... (без змін) ... */ }
     function calculateTotalOdds() {
         if (expressOfTheDayData.selections.length === 0) {
+            currentTotalOdds = 0; // Встановлюємо в 0, якщо немає подій
             return 0;
         }
         currentTotalOdds = expressOfTheDayData.selections.reduce((acc, sel) => acc * sel.odds, 1);
         return currentTotalOdds;
     }
 
+    function updateSummaryAndStakeOptionsVisibility() { /* ... (без змін, але переконайтесь, що currentTotalOdds коректний) ... */ }
     function updateSummaryAndStakeOptionsVisibility() {
-        calculateTotalOdds();
+        calculateTotalOdds(); // Завжди перераховуємо коефіцієнт перед оновленням
         if (eotdTotalOddsValueEl) eotdTotalOddsValueEl.textContent = expressOfTheDayData.selections.length > 0 ? currentTotalOdds.toFixed(2) : "0.00";
         if (eotdTotalStakeValueEl) eotdTotalStakeValueEl.textContent = `${currentTotalStake.toFixed(2)} ₴`;
         if (eotdTotalWinningsValueEl) {
-            const potentialWinnings = expressOfTheDayData.selections.length > 0 && currentTotalStake > 0 ? (currentTotalStake * currentTotalOdds).toFixed(2) : "0.00";
+            const potentialWinnings = expressOfTheDayData.selections.length > 0 && currentTotalStake > 0 && currentTotalOdds > 0 ? (currentTotalStake * currentTotalOdds).toFixed(2) : "0.00";
             eotdTotalWinningsValueEl.textContent = `${potentialWinnings} ₴`;
         }
-
         const hasSelections = expressOfTheDayData.selections.length > 0;
         if (eotdStakeOptionsAreaEl) eotdStakeOptionsAreaEl.classList.toggle('hidden', !hasSelections);
         if (eotdStakeTitleEl) eotdStakeTitleEl.classList.toggle('hidden', !hasSelections);
 
         if (hasSelections) {
-            renderStakeTabs(); // Генеруємо таби сум та фрібету
-            if (eotdBetConfirmationEl) eotdBetConfirmationEl.innerHTML = ''; // Очищаємо повідомлення, якщо є події
+            renderStakeTabs(); 
+            // Очищаємо повідомлення, якщо воно не про успішну ставку (щоб не затерти його одразу)
+            if (eotdBetConfirmationEl && !eotdBetConfirmationEl.querySelector('.bet-placed-style')) {
+                 eotdBetConfirmationEl.innerHTML = ''; 
+            }
         } else {
             if (eotdStakeTabsSumContainerEl) eotdStakeTabsSumContainerEl.innerHTML = '';
             if (eotdFreebetButtonContainerSingleEl) eotdFreebetButtonContainerSingleEl.innerHTML = '';
             if (eotdPlaceBetButtonContainerEl) eotdPlaceBetButtonContainerEl.classList.add('hidden');
             if (eotdBetConfirmationEl) eotdBetConfirmationEl.innerHTML = '<div class="info-message notice">Експрес порожній. Ставки неможливі.</div>';
         }
-        // Скидаємо вибір суми, якщо експрес змінився
-        eotdSelectedStakeTypeOrAmount = null; 
-        if (eotdPlaceBetButtonContainerEl) eotdPlaceBetButtonContainerEl.classList.add('hidden');
-        if (eotdStakeTabsSumContainerEl) eotdStakeTabsSumContainerEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        if (eotdFreebetButtonContainerSingleEl) eotdFreebetButtonContainerSingleEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-
+        // Цей блок скидання вибору суми краще перенести в handleDeleteMatch та processEotdBetPlacement
+        // eotdSelectedStakeTypeOrAmount = null; 
+        // if (eotdPlaceBetButtonContainerEl) eotdPlaceBetButtonContainerEl.classList.add('hidden');
+        // if (eotdStakeTabsSumContainerEl) eotdStakeTabsSumContainerEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        // if (eotdFreebetButtonContainerSingleEl) eotdFreebetButtonContainerSingleEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
     }
 
+
+    function handleDeleteMatch(event) { /* ... (без змін) ... */ }
     function handleDeleteMatch(event) {
         const matchIdToDelete = event.currentTarget.dataset.matchId;
         const cardToRemove = event.currentTarget.closest('.express-match-card');
@@ -89,24 +95,26 @@
         }
         
         expressOfTheDayData.selections = expressOfTheDayData.selections.filter(sel => sel.id !== matchIdToDelete);
-        currentTotalStake = 0; // Скидаємо загальну ставку при зміні експресу
+        currentTotalStake = 0; 
+        eotdSelectedStakeTypeOrAmount = null; // Скидаємо вибір суми
+        if (eotdPlaceBetButtonContainerEl) eotdPlaceBetButtonContainerEl.classList.add('hidden'); // Ховаємо кнопку "Зробити ставку"
+        if (eotdStakeTabsSumContainerEl) eotdStakeTabsSumContainerEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        if (eotdFreebetButtonContainerSingleEl) eotdFreebetButtonContainerSingleEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+
         updateSummaryAndStakeOptionsVisibility();
         tgE.HapticFeedback.impactOccurred('light');
     }
 
+    function displayExpressOfTheDay() { /* ... (без змін) ... */ }
     function displayExpressOfTheDay() {
-        if (!eotdPageTitleEl || !expressCardsListEl ) {
-            console.error('EOTD: Core DOM elements not found for initial display.');
-            return;
-        }
+        if (!eotdPageTitleEl || !expressCardsListEl ) { /* ... */ return; }
         eotdPageTitleEl.textContent = expressOfTheDayData.pageTitleDate;
-
         expressCardsListEl.innerHTML = ''; 
         expressOfTheDayData.selections.forEach(selection => {
-            const card = document.createElement('div');
+            const card = document.createElement('div'); /* ... */
+            const arrowSvg = `<svg class="odds-arrow-svg" width="12" height="12" viewBox="0 0 24 24" fill="${getComputedStyle(document.documentElement).getPropertyValue('--accent-green-color').trim() || '#11FF11'}" style="vertical-align: middle; margin-right: 2px;"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>`;
             card.className = 'express-match-card';
             card.dataset.id = selection.id; 
-            const arrowSvg = `<svg class="odds-arrow-svg" width="12" height="12" viewBox="0 0 24 24" fill="${getComputedStyle(document.documentElement).getPropertyValue('--accent-green-color').trim() || '#11FF11'}" style="vertical-align: middle; margin-right: 2px;"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>`;
             card.innerHTML = `
                 <div class="card-row">
                     <span class="match-teams">${selection.teams}</span>
@@ -123,13 +131,12 @@
             card.querySelector('.delete-match-button').addEventListener('click', handleDeleteMatch);
             expressCardsListEl.appendChild(card);
         });
-        
         currentTotalStake = 0;
         updateSummaryAndStakeOptionsVisibility(); 
     }
-    
-    // Функція для генерації табів сум та фрібету
-    function renderStakeTabs() {
+
+    function renderStakeTabs() { /* ... (без змін) ... */ }
+     function renderStakeTabs() {
         if (eotdStakeTabsSumContainerEl) {
             eotdStakeTabsSumContainerEl.innerHTML = '';
             expressOfTheDayData.stakeAmounts.forEach(amount => {
@@ -141,7 +148,6 @@
                 eotdStakeTabsSumContainerEl.appendChild(stakeTab);
             });
         }
-
         if (eotdFreebetButtonContainerSingleEl) {
             eotdFreebetButtonContainerSingleEl.innerHTML = '';
             if (currentBalances.freebets > 0 && currentBalances.freebetAmount > 0) {
@@ -155,6 +161,8 @@
         }
     }
 
+
+    // ОНОВЛЕНА ФУНКЦІЯ
     function handleEotdStakeSelection(event) {
         eotdSelectedStakeTypeOrAmount = event.currentTarget.dataset.amount;
 
@@ -166,21 +174,50 @@
         }
         event.currentTarget.classList.add('active');
         
-        currentTotalStake = (eotdSelectedStakeTypeOrAmount === 'freebet') ? currentBalances.freebetAmount : parseInt(eotdSelectedStakeTypeOrAmount);
-        updateSummaryDisplay(); // Оновлюємо загальну ставку та виграш
+        // Встановлюємо currentTotalStake на основі ВИБОРУ користувача
+        currentTotalStake = (eotdSelectedStakeTypeOrAmount === 'freebet') 
+                            ? (currentBalances.freebets > 0 ? currentBalances.freebetAmount : 0) 
+                            : parseInt(eotdSelectedStakeTypeOrAmount);
+        
+        // Оновлюємо відображення Загальної ставки та Загального виграшу
+        // calculateTotalOdds() вже викликається в updateSummaryAndStakeOptionsVisibility
+        // Тому тут достатньо викликати лише updateSummaryDisplay
+        // але для простоти можна і повну функцію, якщо вона не важка
+        if (eotdTotalStakeValueEl) eotdTotalStakeValueEl.textContent = `${currentTotalStake.toFixed(2)} ₴`;
+        if (eotdTotalWinningsValueEl) {
+            const potentialWinnings = expressOfTheDayData.selections.length > 0 && currentTotalStake > 0 && currentTotalOdds > 0 
+                                    ? (currentTotalStake * currentTotalOdds).toFixed(2) 
+                                    : "0.00";
+            eotdTotalWinningsValueEl.textContent = `${potentialWinnings} ₴`;
+        }
+
 
         if (eotdPlaceBetButtonContainerEl) eotdPlaceBetButtonContainerEl.classList.remove('hidden');
     }
 
+    // ОНОВЛЕНА ФУНКЦІЯ
     function processEotdBetPlacement() {
-        if (expressOfTheDayData.selections.length === 0) {
-             tgE.showAlert("Неможливо зробити ставку на порожній експрес."); return;
-        }
         if (!eotdSelectedStakeTypeOrAmount) {
-            tgE.showAlert('Будь ласка, оберіть суму ставки або фрібет!'); return;
+            tgE.showAlert('Будь ласка, оберіть суму ставки або фрібет!'); 
+            return;
+        }
+        if (expressOfTheDayData.selections.length === 0) {
+             tgE.showAlert("Неможливо зробити ставку на порожній експрес."); 
+             return;
         }
 
+        // Перераховуємо загальний коефіцієнт ще раз перед самою ставкою, щоб бути впевненим
+        calculateTotalOdds(); 
+        if (currentTotalOdds === 0 && expressOfTheDayData.selections.length > 0) {
+            // Це може статися, якщо один з коефіцієнтів 0, що малоймовірно, але про всяк випадок
+            console.error("EOTD: Total odds is zero with selections present. Aborting bet.");
+            tgE.showAlert("Помилка розрахунку коефіцієнта. Ставка неможлива.");
+            return;
+        }
+
+
         let stakeAmountForCalc = 0; 
+        let actualStakeValue = 0; 
         let messageTitle = "";
         let messageDetails = "";
         let betMade = false;
@@ -189,16 +226,21 @@
         if (eotdSelectedStakeTypeOrAmount === 'freebet') {
             if (currentBalances.freebets > 0 && currentBalances.freebetAmount > 0) {
                 currentBalances.freebets--;
+                actualStakeValue = currentBalances.freebetAmount;
                 stakeAmountForCalc = currentBalances.freebetAmount; 
-                messageTitle = `Експрес дня: Ставка Фрібетом (${stakeAmountForCalc.toFixed(0)} ₴)`;
+                messageTitle = `Експрес дня: Ставка Фрібетом (${actualStakeValue.toFixed(0)} ₴)`;
                 const potentialWin = (stakeAmountForCalc * currentTotalOdds).toFixed(2);
                 messageDetails = `Твою ставку на експрес (коеф. ${currentTotalOdds.toFixed(2)}) прийнято (MVP). Потенційний виграш з фрібету: ${potentialWin} ₴.`;
                 betMade = true;
-            } else { tgE.showAlert('У вас немає доступних фрібетів.'); return; }
+            } else { 
+                tgE.showAlert('У вас немає доступних фрібетів.'); 
+                return; 
+            }
         } else {
             const numericAmount = parseInt(eotdSelectedStakeTypeOrAmount);
             if (currentBalances.main >= numericAmount) {
                 currentBalances.main -= numericAmount;
+                actualStakeValue = numericAmount;
                 stakeAmountForCalc = numericAmount;
                 messageTitle = `Експрес дня: Ставка ${numericAmount} ₴`;
                 const potentialWin = (stakeAmountForCalc * currentTotalOdds).toFixed(2);
@@ -206,6 +248,7 @@
                 betMade = true;
             } else if (currentBalances.bonus >= numericAmount) {
                 currentBalances.bonus -= numericAmount;
+                actualStakeValue = numericAmount;
                 stakeAmountForCalc = numericAmount;
                 messageTitle = `Експрес дня: Ставка ${numericAmount} ₴ (з бонусного балансу)`;
                 const potentialWin = (stakeAmountForCalc * currentTotalOdds).toFixed(2);
@@ -227,10 +270,15 @@
         }
 
         if (betMade) {
-            // `currentTotalStake` вже встановлено в `handleEotdStakeSelection`
-            // або оновлюємо тут, якщо фрібет
-            currentTotalStake = (eotdSelectedStakeTypeOrAmount === 'freebet') ? currentBalances.freebetAmount : parseInt(eotdSelectedStakeTypeOrAmount);
-            updateSummaryDisplay(); // Оновлюємо підсумки, включаючи виграш
+            currentTotalStake = actualStakeValue; 
+            // updateSummaryAndStakeOptionsVisibility(); // НЕ викликаємо тут, щоб не перегенерувати таби ставок
+            // Натомість оновлюємо лише текстові поля підсумків:
+            if (eotdTotalStakeValueEl) eotdTotalStakeValueEl.textContent = `${currentTotalStake.toFixed(2)} ₴`;
+            if (eotdTotalWinningsValueEl) {
+                const potentialWinnings = (currentTotalStake * currentTotalOdds).toFixed(2);
+                eotdTotalWinningsValueEl.textContent = `${potentialWinnings} ₴`;
+            }
+
             if (typeof updateBalanceDisplay === 'function') { updateBalanceDisplay(); }
 
             if (eotdBetConfirmationEl) {
@@ -243,12 +291,14 @@
             tgE.HapticFeedback.notificationOccurred('success');
             if (confetti) { confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, zIndex: 10000 }); }
             
-            // Скидаємо вибір ставки та ховаємо кнопку "Зробити ставку"
+            // Скидаємо вибір ставки та ховаємо кнопку "Зробити ставку", але залишаємо таби сум видимими
             eotdSelectedStakeTypeOrAmount = null;
             if (eotdPlaceBetButtonContainerEl) eotdPlaceBetButtonContainerEl.classList.add('hidden');
             if (eotdStakeTabsSumContainerEl) eotdStakeTabsSumContainerEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
             if (eotdFreebetButtonContainerSingleEl) eotdFreebetButtonContainerSingleEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-
+        } else if (!insufficientFunds) {
+            console.error("EOTD: Bet was not made, and it was not due to insufficient funds. Check logic.");
+            tgE.showAlert("Сталася помилка при розміщенні ставки. Спробуйте ще раз.");
         }
     }
     
@@ -256,6 +306,5 @@
         eotdExecuteBetButtonEl.addEventListener('click', processEotdBetPlacement);
     }
     
-    // Ініціалізація
     displayExpressOfTheDay();
 })();
