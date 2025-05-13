@@ -1,4 +1,832 @@
-@import '_variables.css';
-@import '_base.css';
-@import '_components.css';
-@import '_pages.css';
+:root {
+    /* Кольори */
+    --app-bg-color: #000000;
+    --text-primary-color: #FFFFFF;
+    --text-secondary-color: rgba(255, 255, 255, 0.70);
+    --text-tertiary-color: rgba(255, 255, 255, 0.50);
+    --text-dark-color: #000000;
+    --accent-yellow-color: #FFE433;
+    --accent-red-color: #FF4E33;
+    --accent-green-color: #11FF11;
+
+    --nav-inactive-tab-bg-color: rgba(255, 255, 255, 0.16);
+    --nav-active-tab-bg-color: #FFFFFF;
+    
+    --tab-button-bg-color: #FFFFFF;
+    --tab-button-text-color: #000000;
+    --tab-button-active-bg-color: var(--accent-yellow-color);
+    --tab-button-active-text-color: var(--text-dark-color);
+
+    --express-card-bg-color: rgba(255, 255, 255, 0.07);
+    --express-card-border-color: rgba(255, 255, 255, 0.07);
+
+    --message-bet-placed-bg-color: rgba(7, 172, 255, 0.14);
+    --message-bet-placed-border-color: rgba(7, 172, 255, 0.10);
+    --message-success-bg-color: rgba(76, 217, 100, 0.15);
+    --message-success-border-color: rgba(76, 217, 100, 0.3);
+    --message-notice-bg-color: rgba(255, 204, 0, 0.15);
+    --message-notice-border-color: rgba(255, 204, 0, 0.3);
+    --message-error-bg-color: rgba(255, 59, 48, 0.15);
+    --message-error-border-color: rgba(255, 59, 48, 0.3);
+
+    /* Шрифти */
+    --font-family-main: 'Geologica', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    
+    /* Радіуси округлення */
+    --border-radius-oval: 9999px;
+    --border-radius-main: 12px;
+
+    /* Відступи */
+    --gap-main: 8px;
+    --gap-internal: 4px;
+    
+    /* Paddings */
+    --padding-button-deposit: 10px 20px;
+    --padding-nav-tab: 10px 8px;
+    --padding-tab-interactive: 8px 4px;
+    --padding-message-block: 12px;
+    --padding-express-card: 16px 12px;
+
+    /* Анітації */
+    --transition-duration: 0.2s;
+    --transition-timing-function: ease-in-out;
+    --transition-transform-duration: 0.15s;
+}
+
+body {
+    font-family: var(--font-family-main);
+    padding: 0;
+    margin: 0;
+    color: var(--text-primary-color);
+    background-color: var(--app-bg-color);
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Хедер --- */
+.main-header {
+    padding: 16px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    min-height: 58px;
+    box-sizing: border-box;
+}
+
+#loggedInHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+#loggedInHeader.hidden { display: none !important; }
+
+#loggedOutHeader {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+#loggedOutHeader.hidden { display: none !important; }
+
+.balance-info { text-align: left; }
+
+.balance-info p.balance-line {
+    margin: 1px 0;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    line-height: 18px;
+    color: var(--text-primary-color);
+    font-weight: 200;
+}
+
+.balance-info strong { font-weight: 500; }
+
+#depositButton {
+    display: flex;
+    padding: var(--padding-button-deposit);
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap-internal);
+    border-radius: var(--border-radius-oval);
+    border: none;
+    background: var(--accent-yellow-color);
+    color: var(--text-dark-color);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+    cursor: pointer;
+    transition: background-color var(--transition-duration) var(--transition-timing-function), transform var(--transition-transform-duration) var(--transition-timing-function);
+    white-space: nowrap;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+#depositButton:hover {
+    background: #edd62f;
+    transform: scale(1.03);
+}
+
+#depositButton:active {
+    transform: scale(0.98);
+}
+
+#loginRegisterButton {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* --- Навігація (Таби) --- */
+nav {
+    display: flex;
+    padding: 0;
+    margin: 16px 15px 32px 15px;
+}
+
+nav button.nav-button {
+    display: flex;
+    padding: var(--padding-nav-tab);
+    justify-content: center;
+    align-items: center;
+    flex: 1 0 0;
+    border-radius: var(--border-radius-oval);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    line-height: 18px;
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--transition-duration) var(--transition-timing-function), color var(--transition-duration) var(--transition-timing-function);
+    margin: 0;
+}
+
+nav button.nav-button:not(.active) {
+    background: var(--nav-inactive-tab-bg-color);
+    color: var(--text-primary-color);
+    font-weight: 200;
+}
+
+nav button.nav-button:not(.active):hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+nav button.nav-button.active {
+    background: var(--nav-active-tab-bg-color);
+    color: var(--text-dark-color);
+    font-weight: 200;
+}
+
+/* --- Page Content & Common Page Elements --- */
+.page-content {
+    padding: 0 15px 15px 15px;
+    flex-grow: 1;
+    position: relative;
+}
+
+.page-title-date {
+    color: var(--text-secondary-color);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 200;
+    line-height: 18px;
+    text-align: center;
+    margin-bottom: 2px;
+}
+
+.teams {
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 32px;
+    text-align: center;
+    margin-top: 2px;
+    margin-bottom: 24px;
+}
+
+/* --- Таби Коефіцієнтів, Сум, Фрібету, Прогнозів --- */
+.odds-container,
+.stake-tabs-container {
+    display: flex;
+    justify-content: center;
+    gap: var(--gap-main);
+    margin-bottom: var(--gap-main);
+}
+
+.freebet-button-container-single {
+    margin-top: var(--gap-main);
+    display: flex;
+    justify-content: center;
+}
+
+.tab-button {
+    display: flex;
+    padding: var(--padding-tab-interactive);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap-internal);
+    flex: 1 0 0;
+    border-radius: var(--border-radius-main);
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--transition-duration) var(--transition-timing-function),
+                color var(--transition-duration) var(--transition-timing-function),
+                transform var(--transition-transform-duration) var(--transition-timing-function);
+    background-color: var(--tab-button-bg-color);
+    color: var(--tab-button-text-color);
+}
+
+.tab-button:hover:not(.active) {
+    opacity: 0.85;
+    transform: scale(1.02);
+}
+
+.tab-button.active {
+    background-color: var(--tab-button-active-bg-color);
+    color: var(--tab-button-active-text-color);
+    transform: scale(1.05);
+}
+
+.tab-button .odd-name {
+    align-self: stretch;
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 14px;
+}
+
+.tab-button .odd-value {
+    align-self: stretch;
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+.tab-button .odd-coefficient {
+    align-self: stretch;
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 12px;
+    color: var(--text-secondary-color);
+}
+
+.tab-button.stake-tab,
+.tab-button.freebet-tab-single,
+.tab-button.prediction-choice-tab {
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.tab-button.freebet-tab-single {
+    flex: none;
+    width: 100%;
+    max-width: 353px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--text-secondary-color);
+    background-color: transparent;
+    color: var(--text-primary-color);
+}
+
+.tab-button.freebet-tab-single.active {
+    background-color: var(--tab-button-active-bg-color);
+    color: var(--tab-button-active-text-color);
+    border-color: var(--tab-button-active-bg-color);
+}
+
+#motdStakeOptionsArea > p,
+#eotdStakeOptionsArea > p {
+    color: var(--text-secondary-color);
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 22px;
+    margin-bottom: 16px;
+}
+
+/* --- Кнопка "Зробити ставку" --- */
+.place-bet-button-container {
+    margin-top: 32px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.place-bet-button-container.hidden {
+    display: none !important;
+}
+
+.bet-confirmation {
+    margin-top: 16px;
+    margin-bottom: 24px;
+    min-height: 60px;
+}
+
+.place-bet-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 56px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    border-radius: var(--border-radius-main);
+    border: none;
+    font-family: var(--font-family-main);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+    background-color: var(--accent-yellow-color);
+    color: var(--text-dark-color);
+    cursor: pointer;
+    text-align: center;
+    transition: background-color var(--transition-duration) var(--transition-timing-function),
+                transform var(--transition-transform-duration) var(--transition-timing-function);
+}
+
+.place-bet-button:hover {
+    background-color: #edd62f;
+    transform: scale(1.02);
+}
+
+.place-bet-button:active {
+    transform: scale(0.98);
+    background-color: #e0c92a;
+}
+
+/* --- Стилі для сторінки "Експрес дня" --- */
+#eotdPageTitle {
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 32px;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.express-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.express-match-card {
+    display: flex;
+    padding: var(--padding-express-card);
+    flex-direction: column;
+    gap: var(--gap-internal);
+    border-radius: var(--border-radius-main);
+    border: 0.5px solid var(--express-card-border-color);
+    background: var(--express-card-bg-color);
+    position: relative;
+    overflow: hidden;
+    transition: opacity var(--transition-duration) var(--transition-timing-function),
+                max-height 0.3s var(--transition-timing-function),
+                padding 0.3s var(--transition-timing-function),
+                margin 0.3s var(--transition-timing-function),
+                border-width 0.3s var(--transition-timing-function);
+}
+
+.express-match-card.removing {
+    opacity: 0;
+    max-height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    border-width: 0 !important;
+}
+
+.express-match-card .card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: var(--gap-internal);
+}
+
+.express-match-card .match-teams {
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 22px;
+    flex-grow: 1;
+}
+
+.express-match-card .delete-match-button {
+    background: transparent;
+    border: none;
+    color: var(--accent-red-color);
+    font-family: var(--font-family-main);
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1;
+    padding: 4px;
+    margin-left: 8px;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color var(--transition-duration) var(--transition-timing-function);
+}
+
+.express-match-card .delete-match-button:hover {
+    background-color: rgba(255, 78, 51, 0.1);
+}
+
+.express-match-card .match-datetime {
+    color: var(--text-secondary-color);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 200;
+    line-height: 18px;
+}
+
+.express-match-card .market-name {
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 22px;
+}
+
+.express-match-card .selected-outcome-details {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-internal);
+    align-self: stretch;
+}
+
+.express-match-card .outcome-name {
+    color: var(--text-primary-color);
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 22px;
+}
+
+.express-match-card .odds-arrow svg {
+    width: 12px;
+    height: 12px;
+    fill: var(--accent-green-color);
+    vertical-align: middle;
+    margin-right: 2px;
+}
+
+.express-match-card .outcome-odds {
+    color: var(--accent-green-color);
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 22px;
+}
+
+.express-summary-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--gap-internal);
+    align-self: stretch;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    padding: 0 12px;
+}
+
+.express-summary-block .summary-line {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    line-height: 18px;
+}
+
+.express-summary-block .summary-label {
+    color: var(--text-primary-color);
+    font-weight: 200;
+}
+
+.express-summary-block .summary-value {
+    color: var(--text-primary-color);
+    font-weight: 500;
+}
+
+.accept-express-button-container {
+    margin-bottom: 24px;
+}
+
+/* --- Стилі для сторінки "Щоденний Прогноз" --- */
+.daily-login-container {
+    padding: 20px;
+    background-color: var(--app-bg-color);
+    color: var(--text-primary-color);
+}
+
+.daily-login-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.progress-bar {
+    margin-bottom: 20px;
+}
+
+.progress-bar-container {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-main);
+    height: 10px;
+    margin-bottom: 10px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--accent-yellow-color);
+    border-radius: var(--border-radius-main);
+    transition: width var(--transition-duration) var(--transition-timing-function);
+}
+
+#progressText {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-secondary-color);
+    font-weight: 300;
+}
+
+.match-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.match-item {
+    background-color: var(--express-card-bg-color);
+    padding: 12px;
+    border-radius: var(--border-radius-main);
+    border: 0.5px solid var(--express-card-border-color);
+}
+
+.match-item h3 {
+    font-size: 16px;
+    font-weight: 300;
+    margin: 0 0 10px;
+    text-align: center;
+}
+
+.match-item .options {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.match-item button {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary-color);
+    border: 1px solid var(--text-secondary-color);
+    padding: 8px 16px;
+    border-radius: var(--border-radius-main);
+    cursor: pointer;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-weight: 300;
+    transition: background-color var(--transition-duration) var(--transition-timing-function),
+                color var(--transition-duration) var(--transition-timing-function),
+                transform var(--transition-transform-duration) var(--transition-timing-function);
+}
+
+.match-item button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.03);
+}
+
+.match-item button.selected {
+    background-color: var(--accent-yellow-color);
+    color: var(--text-dark-color);
+    border-color: var(--accent-yellow-color);
+}
+
+.match-item button:disabled {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-tertiary-color);
+    cursor: not-allowed;
+    border-color: var(--text-tertiary-color);
+}
+
+.match-item .confirm-button {
+    background-color: var(--accent-yellow-color);
+    color: var(--text-dark-color);
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-main);
+    cursor: pointer;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+    transition: background-color var(--transition-duration) var(--transition-timing-function),
+                transform var(--transition-transform-duration) var(--transition-timing-function);
+}
+
+.match-item .confirm-button:hover {
+    background-color: #edd62f;
+    transform: scale(1.03);
+}
+
+.match-item .confirm-button:disabled {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-tertiary-color);
+    cursor: not-allowed;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.action-button {
+    background-color: var(--accent-yellow-color);
+    color: var(--text-dark-color);
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--border-radius-main);
+    cursor: pointer;
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-weight: 500;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background-color var(--transition-duration) var(--transition-timing-function),
+                transform var(--transition-transform-duration) var(--transition-timing-function);
+}
+
+.action-button:hover {
+    background-color: #edd62f;
+    transform: scale(1.03);
+}
+
+.action-button:active {
+    transform: scale(0.98);
+}
+
+.reward-message {
+    margin-top: 10px;
+    text-align: center;
+    color: var(--accent-yellow-color);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-weight: 300;
+}
+
+/* --- Повідомлення --- */
+.bet-confirmation .info-message.bet-placed-style,
+.prediction-result .info-message.bet-placed-style {
+    max-width: 353px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: var(--padding-message-block);
+    gap: var(--gap-internal);
+    border-radius: var(--border-radius-main);
+    border: 1px solid var(--message-bet-placed-border-color);
+    background: var(--message-bet-placed-bg-color);
+}
+
+.message-title {
+    color: var(--text-primary-color);
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+}
+
+.message-details {
+    color: var(--text-primary-color);
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 200;
+    line-height: 22px;
+}
+
+.info-message {
+    padding: 12px;
+    margin-top: 20px;
+    border-radius: var(--border-radius-main);
+    font-size: 15px;
+    border: 1px solid transparent;
+    text-align: center;
+    line-height: 1.5;
+    max-width: 353px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.info-message.success {
+    background-color: var(--message-success-bg-color);
+    border-color: var(--message-success-border-color);
+    color: #FFF;
+}
+
+.info-message.notice {
+    background-color: var(--message-notice-bg-color);
+    border-color: var(--message-notice-border-color);
+    color: #FFF;
+}
+
+.info-message.error {
+    background-color: var(--message-error-bg-color);
+    border-color: var(--message-error-border-color);
+    color: #FFF;
+}
+
+/* --- Футер --- */
+.user-info-footer {
+    padding: 10px 15px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--text-secondary-color);
+    word-break: break-all;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: auto;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 36px);
+}
+
+/* --- Індикатор завантаження --- */
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px;
+}
+
+.loader {
+    border: 5px solid rgba(255, 255, 255, 0.2);
+    border-top: 5px solid var(--accent-yellow-color);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- Додаткові стилі --- */
+.hidden {
+    display: none !important;
+}
