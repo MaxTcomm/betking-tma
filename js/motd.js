@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function loadMatchData() {
         try {
             console.log('Завантаження даних Матчу дня...');
-            // Замініть на реальний URL вашого сервера
-            const response = await fetch('https://890a-178-54-3-28.ngrok-free.app');
+            // Використовуємо ваш ngrok URL для локального сервера
+            const response = await fetch('https://890a-178-54-3-28.ngrok-free.app/match-of-the-day.json');
             if (!response.ok) {
                 throw new Error(`HTTP помилка: ${response.status}`);
             }
