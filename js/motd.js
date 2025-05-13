@@ -1,7 +1,19 @@
-const tgM = window.Telegram.WebApp;
+console.log('motd.js починає завантаження...');
 
-tgM.ready();
-tgM.expand();
+// Перевірка наявності Telegram Web App
+let tgM;
+try {
+    tgM = window.Telegram.WebApp;
+    if (!tgM) {
+        throw new Error('Telegram.WebApp не ініціалізований');
+    }
+    console.log('Telegram.WebApp ініціалізований:', tgM);
+    tgM.ready();
+    tgM.expand();
+} catch (error) {
+    console.error('Помилка ініціалізації Telegram.WebApp:', error);
+    tgM = null;
+}
 
 // Ініціалізація змінних
 let matchData = null;
@@ -11,6 +23,8 @@ let predictionMade = false;
 let userBalance = 1000; // Імітація балансу користувача для MVP (1000 грн)
 
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOMContentLoaded спрацював');
+
     const motdDate = document.getElementById('motdDate');
     const motdTeams = document.getElementById('motdTeams');
     const motdLeague = document.getElementById('motdLeague');
@@ -31,16 +45,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const placePredictionButton = document.getElementById('placePredictionButton');
     const motdPredictionResult = document.getElementById('motdPredictionResult');
 
+    // Перевірка наявності елементів
+    console.log('Перевірка елементів DOM:');
+    console.log('motdTeams:', motdTeams);
+    console.log('placePredictionButton:', placePredictionButton);
+
     // Завантаження даних Матчу дня через API
     async function loadMatchData() {
         try {
             console.log('Завантаження даних Матчу дня...');
-            // Використовуємо ваш ngrok URL для локального сервера
-            const response = await fetch('https://da71-178-54-3-28.ngrok-free.app/match-of-the-day.json', {
-                headers: {
-                    'ngrok-skip-browser-warning': 'true' // Додаємо заголовок, щоб обійти попередження ngrok
-                }
-            });
+            // Використовуємо URL вашого нового сервера
+            const response = await fetch('http://185.233.44.95:3000/match-of-the-day.json');
+            console.log('Отримано відповідь:', response);
             if (!response.ok) {
                 throw new Error(`HTTP помилка: ${response.status}`);
             }
@@ -171,17 +187,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Підтвердження прогнозу
     placePredictionButton.addEventListener('click', () => {
         if (!selectedPrediction) {
-            tgM.showAlert('Спочатку виберіть результат матчу!');
+            if (tgM) {
+                tgM.showAlert('Спочатку виберіть результат матчу!');
+            } else {
+                console.log('Спочатку виберіть результат матчу!');
+            }
             return;
         }
 
         if (!selectedStake) {
-            tgM.showAlert('Спочатку виберіть суму ставки!');
+            if (tgM) {
+                tgM.showAlert('Спочатку виберіть суму ставки!');
+            } else {
+                console.log('Спочатку виберіть суму ставки!');
+            }
             return;
         }
 
         if (predictionMade) {
-            tgM.showAlert('Ви вже зробили прогноз на цей матч!');
+            if (tgM) {
+                tgM.showAlert('Ви вже зробили прогноз на цей матч!');
+            } else {
+                console.log('Ви вже зробили прогноз на цей матч!');
+            }
             return;
         }
 
@@ -229,6 +257,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Ініціалізація
+    console.log('Починаємо завантаження даних...');
     await loadMatchData();
     displayMatchData();
 });
