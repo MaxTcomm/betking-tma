@@ -16,16 +16,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const oddTeam1Value = document.getElementById('oddTeam1Value');
     const oddDrawValue = document.getElementById('oddDrawValue');
     const oddTeam2Value = document.getElementById('oddTeam2Value');
+    const oddTeam1Coefficient = document.getElementById('oddTeam1Coefficient');
+    const oddDrawCoefficient = document.getElementById('oddDrawCoefficient');
+    const oddTeam2Coefficient = document.getElementById('oddTeam2Coefficient');
     const predictTeam1 = document.getElementById('predictTeam1');
     const predictDraw = document.getElementById('predictDraw');
     const predictTeam2 = document.getElementById('predictTeam2');
     const placePredictionButton = document.getElementById('placePredictionButton');
     const motdPredictionResult = document.getElementById('motdPredictionResult');
 
-    // Завантаження даних Матчу дня
+    // Завантаження даних Матчу дня через API
     async function loadMatchData() {
         try {
-            const response = await fetch('/match-of-the-day.json'); // Припустимо, що ваш сервер повертає JSON
+            const response = await fetch('https://your-server-url/match-of-the-day.json'); // Замініть на ваш URL сервера
             matchData = await response.json();
         } catch (error) {
             console.error('Помилка завантаження даних Матчу дня:', error);
@@ -43,6 +46,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             oddTeam1Value.textContent = matchData.odds.team1;
             oddDrawValue.textContent = matchData.odds.draw;
             oddTeam2Value.textContent = matchData.odds.team2;
+            oddTeam1Coefficient.textContent = `Коеф: ${matchData.coefficients.team1}`;
+            oddDrawCoefficient.textContent = `Коеф: ${matchData.coefficients.draw}`;
+            oddTeam2Coefficient.textContent = `Коеф: ${matchData.coefficients.team2}`;
 
             // Приховуємо кнопку "Нічия", якщо матч із кіберспорту (без нічиєї)
             if (matchData.odds.draw === "0%") {
@@ -56,6 +62,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             oddTeam1Value.textContent = "";
             oddDrawValue.textContent = "";
             oddTeam2Value.textContent = "";
+            oddTeam1Coefficient.textContent = "";
+            oddDrawCoefficient.textContent = "";
+            oddTeam2Coefficient.textContent = "";
         }
     }
 

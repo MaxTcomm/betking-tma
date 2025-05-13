@@ -265,6 +265,17 @@ nav button.nav-button.active {
     line-height: 22px; 
 }
 
+.tab-button .odd-coefficient { 
+    align-self: stretch;
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 16px;
+    color: var(--text-secondary-color);
+}
+
 .tab-button.stake-tab,
 .tab-button.freebet-tab-single,
 .tab-button.prediction-choice-tab { 
