@@ -1,0 +1,54 @@
+:root {
+    /* Кольори */
+    --app-bg-color: #000000;
+    --text-primary-color: #FFFFFF;
+    --text-secondary-color: rgba(255, 255, 255, 0.70);
+    --text-tertiary-color: rgba(255, 255, 255, 0.50);
+    --text-dark-color: #000000; 
+    --accent-yellow-color: #FFE433;
+    --accent-red-color: #FF4E33; 
+    --accent-green-color: #11FF11; 
+
+    --nav-inactive-tab-bg-color: rgba(255, 255, 255, 0.16);
+    --nav-active-tab-bg-color: #FFFFFF;
+    
+    --tab-button-bg-color: #FFFFFF; 
+    --tab-button-text-color: #000000; 
+    --tab-button-active-bg-color: var(--accent-yellow-color); 
+    --tab-button-active-text-color: var(--text-dark-color); 
+
+    --express-card-bg-color: rgba(255, 255, 255, 0.07);
+    --express-card-border-color: rgba(255, 255, 255, 0.07);
+
+    --message-bet-placed-bg-color: rgba(7, 172, 255, 0.14); 
+    --message-bet-placed-border-color: rgba(7, 172, 255, 0.10);
+    --message-success-bg-color: rgba(76, 217, 100, 0.15); 
+    --message-success-border-color: rgba(76, 217, 100, 0.3);
+    --message-notice-bg-color: rgba(255, 204, 0, 0.15); 
+    --message-notice-border-color: rgba(255, 204, 0, 0.3);
+    --message-error-bg-color: rgba(255, 59, 48, 0.15); 
+    --message-error-border-color: rgba(255, 59, 48, 0.3);
+
+    /* Шрифти */
+    --font-family-main: 'Geologica', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    
+    /* Радіуси округлення */
+    --border-radius-oval: 9999px;
+    --border-radius-main: 12px;   
+
+    /* Відступи */
+    --gap-main: 8px; 
+    --gap-internal: 4px; 
+    
+    /* Paddings */
+    --padding-button-deposit: 10px 20px; 
+    --padding-nav-tab: 10px 8px; 
+    --padding-tab-interactive: 8px 4px;
+    --padding-message-block: 12px;
+    --padding-express-card: 16px 12px;
+
+    /* Анітації */
+    --transition-duration: 0.2s;
+    --transition-timing-function: ease-in-out;
+    --transition-transform-duration: 0.15s; 
+}

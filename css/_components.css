@@ -1,0 +1,256 @@
+#depositButton {
+    display: flex;
+    padding: var(--padding-button-deposit);
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap-internal);
+    border-radius: var(--border-radius-oval);
+    border: none;
+    background: var(--accent-yellow-color);
+    color: var(--text-dark-color);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+    cursor: pointer;
+    transition: background-color var(--transition-duration) var(--transition-timing-function), transform var(--transition-transform-duration) var(--transition-timing-function);
+    white-space: nowrap;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+#depositButton:hover {
+    background: #edd62f;
+    transform: scale(1.03);
+}
+
+#depositButton:active {
+    transform: scale(0.98);
+}
+
+#loginRegisterButton {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* --- Таби Коефіцієнтів, Сум, Фрібету, Прогнозів --- */
+.odds-container, 
+.stake-tabs-container {
+    display: flex;
+    justify-content: center;
+    gap: var(--gap-main);
+    margin-bottom: var(--gap-main);
+}
+
+.freebet-button-container-single {
+    margin-top: var(--gap-main);
+    display: flex;
+    justify-content: center;
+}
+
+.tab-button {
+    display: flex;
+    padding: var(--padding-tab-interactive);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap-internal);
+    flex: 1 0 0;
+    border-radius: var(--border-radius-main);
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--transition-duration) var(--transition-timing-function),
+                color var(--transition-duration) var(--transition-timing-function),
+                transform var(--transition-transform-duration) var(--transition-timing-function);
+    background-color: var(--tab-button-bg-color);
+    color: var(--tab-button-text-color);
+}
+
+.tab-button:hover:not(.active) {
+    opacity: 0.85;
+    transform: scale(1.02);
+}
+
+.tab-button.active {
+    background-color: var(--tab-button-active-bg-color);
+    color: var(--tab-button-active-text-color);
+    transform: scale(1.05);
+}
+
+.tab-button .odd-name {
+    align-self: stretch;
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 14px;
+}
+
+.tab-button .odd-value {
+    align-self: stretch;
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+.tab-button .odd-coefficient {
+    align-self: stretch;
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 12px;
+    color: var(--text-secondary-color);
+}
+
+.tab-button.stake-tab,
+.tab-button.freebet-tab-single,
+.tab-button.prediction-choice-tab {
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.tab-button.freebet-tab-single {
+    flex: none;
+    width: 100%;
+    max-width: 353px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--text-secondary-color);
+    background-color: transparent;
+    color: var(--text-primary-color);
+}
+
+.tab-button.freebet-tab-single.active {
+    background-color: var(--tab-button-active-bg-color);
+    color: var(--tab-button-active-text-color);
+    border-color: var(--tab-button-active-bg-color);
+}
+
+/* --- Кнопка "Зробити ставку" --- */
+.place-bet-button-container {
+    margin-top: 32px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.place-bet-button-container.hidden {
+    display: none !important;
+}
+
+.bet-confirmation {
+    margin-top: 16px;
+    margin-bottom: 24px;
+    min-height: 60px;
+}
+
+.place-bet-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 56px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    border-radius: var(--border-radius-main);
+    border: none;
+    font-family: var(--font-family-main);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+    background-color: var(--accent-yellow-color);
+    color: var(--text-dark-color);
+    cursor: pointer;
+    text-align: center;
+    transition: background-color var(--transition-duration) var(--transition-timing-function),
+                transform var(--transition-transform-duration) var(--transition-timing-function);
+}
+
+.place-bet-button:hover {
+    background-color: #edd62f;
+    transform: scale(1.02);
+}
+
+.place-bet-button:active {
+    transform: scale(0.98);
+    background-color: #e0c92a;
+}
+
+/* --- Повідомлення --- */
+.bet-confirmation .info-message.bet-placed-style,
+.prediction-result .info-message.bet-placed-style {
+    max-width: 353px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: var(--padding-message-block);
+    gap: var(--gap-internal);
+    border-radius: var(--border-radius-main);
+    border: 1px solid var(--message-bet-placed-border-color);
+    background: var(--message-bet-placed-bg-color);
+}
+
+.message-title {
+    color: var(--text-primary-color);
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+}
+
+.message-details {
+    color: var(--text-primary-color);
+    text-align: center;
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 200;
+    line-height: 22px;
+}
+
+.info-message {
+    padding: 12px;
+    margin-top: 20px;
+    border-radius: var(--border-radius-main);
+    font-size: 15px;
+    border: 1px solid transparent;
+    text-align: center;
+    line-height: 1.5;
+    max-width: 353px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.info-message.success {
+    background-color: var(--message-success-bg-color);
+    border-color: var(--message-success-border-color);
+    color: #FFF;
+}
+
+.info-message.notice {
+    background-color: var(--message-notice-bg-color);
+    border-color: var(--message-notice-border-color);
+    color: #FFF;
+}
+
+.info-message.error {
+    background-color: var(--message-error-bg-color);
+    border-color: var(--message-error-border-color);
+    color: #FFF;
+}
