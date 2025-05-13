@@ -1,13 +1,15 @@
 <div class="daily-login-container">
-    <h2>Щоденний прогноз</h2>
+    <h2 class="daily-login-title">Щоденний прогноз</h2>
     <div class="progress-bar">
-        <div class="progress-circles" id="progressCircles"></div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
         <p id="progressText">Прогрес: 4/10 успішних прогнозів</p>
     </div>
     <div class="match-list" id="matchList"></div>
     <div class="action-buttons">
-        <button id="extraBetButton" class="extra-bet-button">Додатковий прогноз (50 грн)</button>
-        <button id="shareButton" class="share-button">Запросити друга</button>
+        <button id="extraBetButton" class="action-button extra-bet-button">Додатковий прогноз</button>
+        <button id="shareButton" class="action-button share-button">Запросити друга</button>
     </div>
     <div id="rewardMessage" class="reward-message"></div>
 </div>

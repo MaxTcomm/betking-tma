@@ -8,6 +8,9 @@ let streak = 4; // Для демо: користувач уже має 4 усп�
 let dailyBetUsed = false;
 let extraBetPurchased = false;
 let friendInvited = false;
+let selectedMatchId = null;
+let selectedOption = null;
+
 let matches = [
     { id: 1, teams: ["Team A", "Team B"], type: "esport", result: null, predicted: false },
     { id: 2, teams: ["Team C", "Team D"], type: "sport", result: null, predicted: false },
@@ -48,7 +51,7 @@ function loadState() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const progressCircles = document.getElementById('progressCircles');
+    const progressBarFill = document.getElementById('progressBarFill');
     const progressText = document.getElementById('progressText');
     const matchList = document.getElementById('matchList');
     const extraBetButton = document.getElementById('extraBetButton');
@@ -58,14 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Завантаження стану
     loadState();
 
-    // Відображення прогресу (10 кружків)
+    // Відображення прогресу (прогрес-бар)
     function displayProgress() {
-        progressCircles.innerHTML = '';
-        for (let i = 0; i < 10; i++) {
-            const circle = document.createElement('div');
-            circle.className = 'progress-circle' + (i < streak ? ' filled' : '');
-            progressCircles.appendChild(circle);
-        }
+        const progressPercentage = (streak / 10) * 100;
+        progressBarFill.style.width = `${progressPercentage}%`;
         progressText.textContent = `Прогрес: ${streak}/10 успішних прогнозів`;
     }
 
@@ -76,24 +75,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const matchItem = document.createElement('div');
             matchItem.className = 'match-item';
             let optionsHtml = `
-                <button ${match.predicted ? 'disabled' : ''} onclick="selectOption(${match.id}, '${match.teams[0]}')">${match.teams[0]}</button>
-                ${match.type === 'sport' ? `<button ${match.predicted ? 'disabled' : ''} onclick="selectOption(${match.id}, 'Нічия')">Нічия</button>` : ''}
-                <button ${match.predicted ? 'disabled' : ''} onclick="selectOption(${match.id}, '${match.teams[1]}')">${match.teams[1]}</button>
+                <button ${match.predicted ? 'disabled' : ''} onclick="selectOption(${match.id}, '${match.teams[0]}', this)">${match.teams[0]}</button>
+                ${match.type === 'sport' ? `<button ${match.predicted ? 'disabled' : ''} onclick="selectOption(${match.id}, 'Нічия', this)">Нічия</button>` : ''}
+                <button ${match.predicted ? 'disabled' : ''} onclick="selectOption(${match.id}, '${match.teams[1]}', this)">${match.teams[1]}</button>
             `;
+            let confirmButtonHtml = match.predicted ? '' : `<button class="confirm-button" onclick="confirmPrediction(${match.id})" id="confirmButton-${match.id}" disabled>Підтвердити прогноз</button>`;
             matchItem.innerHTML = `
                 <h3>${match.teams[0]} vs ${match.teams[1]}</h3>
                 <div class="options" id="options-${match.id}">
                     ${optionsHtml}
                 </div>
+                ${confirmButtonHtml}
             `;
             matchList.appendChild(matchItem);
         });
     }
 
     // Вибір опції для прогнозу
-    window.selectOption = (matchId, option) => {
+    window.selectOption = (matchId, option, button) => {
         if (dailyBetUsed && !extraBetPurchased && !friendInvited) {
-            tgD.showAlert('Ви вже зробили безкоштовний прогноз сьогодні! Додатковий прогноз коштує 50 грн або запросіть друга.');
+            tgD.showAlert('Ви вже зробили безкоштовний прогноз сьогодні! Додатковий прогноз коштує від 50 грн або запросіть друга.');
             return;
         }
 
@@ -103,13 +104,44 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        match.result = option;
+        // Знімаємо виділення з усіх кнопок
+        const buttons = document.querySelectorAll(`#options-${matchId} button`);
+        buttons.forEach(btn => btn.classList.remove('selected'));
+
+        // Виділяємо вибрану кнопку
+        button.classList.add('selected');
+
+        // Зберігаємо вибір
+        selectedMatchId = matchId;
+        selectedOption = option;
+
+        // Активуємо кнопку "Підтвердити прогноз"
+        const confirmButton = document.getElementById(`confirmButton-${matchId}`);
+        if (confirmButton) {
+            confirmButton.disabled = false;
+        }
+    };
+
+    // Підтвердження прогнозу
+    window.confirmPrediction = (matchId) => {
+        if (!selectedMatchId || !selectedOption) {
+            tgD.showAlert('Спочатку виберіть результат матчу!');
+            return;
+        }
+
+        const match = matches.find(m => m.id === matchId);
+        if (match.predicted) {
+            tgD.showAlert('Ви вже зробили прогноз для цього матчу!');
+            return;
+        }
+
+        match.result = selectedOption;
         match.predicted = true;
 
         // Імітація результату матчу (для демо)
         const correctResult = match.type === 'sport' ? (Math.random() > 0.66 ? match.teams[0] : Math.random() > 0.33 ? 'Нічия' : match.teams[1]) : (Math.random() > 0.5 ? match.teams[0] : match.teams[1]);
         
-        if (option === correctResult) {
+        if (selectedOption === correctResult) {
             streak++;
             tgD.showAlert(`Вітаємо! Ви вгадали переможця! Ваш стрік: ${streak}`);
             if (streak === 3) {
@@ -128,17 +160,29 @@ document.addEventListener('DOMContentLoaded', () => {
         dailyBetUsed = true;
         extraBetPurchased = false; // Скидаємо після прогнозу
         friendInvited = false; // Скидаємо після прогнозу
+        selectedMatchId = null;
+        selectedOption = null;
+
         saveState();
         displayProgress();
         displayMatches();
     };
 
-    // Додатковий прогноз за 50 грн
+    // Додатковий прогноз за гроші (з пресетами)
     extraBetButton.addEventListener('click', () => {
         if (dailyBetUsed && !extraBetPurchased) {
-            tgD.showConfirm("Додатковий прогноз коштує 50 грн. Продовжити?", (confirmed) => {
-                if (confirmed) {
-                    tgD.showAlert("Імітація оплати 50 грн... (для MVP). Додатковий прогноз активовано!");
+            tgD.showPopup({
+                title: "Додатковий прогноз",
+                message: "Виберіть суму для додаткового прогнозу (FreeBet не можна використовувати):",
+                buttons: [
+                    { id: "50", type: "default", text: "50 грн" },
+                    { id: "100", type: "default", text: "100 грн" },
+                    { id: "200", type: "default", text: "200 грн" }
+                ]
+            }, (buttonId) => {
+                if (buttonId) {
+                    const amount = parseInt(buttonId);
+                    tgD.showAlert(`Імітація оплати ${amount} грн... (для MVP). Додатковий прогноз активовано!`);
                     extraBetPurchased = true;
                     saveState();
                 }
@@ -153,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Запрошення друга
     shareButton.addEventListener('click', () => {
         if (dailyBetUsed && !friendInvited) {
-            const shareText = "Привіт! Приєднуйся до BetKing — роби прогнози на матчі та отримуй FreeBets! 🚀 Це MVP, реєстрація не потрібна.";
+            const shareText = "Привіт! Приєднуйся до BetKing — роби прогнози на матчі та отримуй FreeBets! 🚀 Це лише MVP-версія, тому ми ще не записуємо дані — основний функціонал у розробці!";
             tgD.showPopup({
                 title: "Запросити друга",
                 message: "Відправити запрошення через Telegram?",

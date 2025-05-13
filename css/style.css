@@ -512,91 +512,43 @@ nav button.nav-button.active {
 .accept-express-button-container { margin-bottom: 24px; }
 
 /* --- Стилі для сторінки "Щоденний Прогноз" --- */
-.streak-progress {
-    margin-bottom: 16px;
-    text-align: center;
-}
-
-.streak-circles {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-
-.streak-circle {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--text-secondary-color);
-    transition: background-color var(--transition-duration) var(--transition-timing-function);
-}
-
-.streak-circle.filled {
-    background-color: var(--accent-yellow-color);
-    border-color: var(--accent-yellow-color);
-}
-
-.streak-info,
-.rewards-info {
-    color: var(--text-secondary-color);
-    font-family: var(--font-family-main);
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 300;
-    line-height: 18px;
-    text-align: center;
-}
-
-.streak-info { margin-bottom: 4px; }
-
-.rewards-info { margin-bottom: 20px; font-style: italic; }
-
-.streak-info #currentStreak { color: var(--accent-yellow-color); font-weight: 500; }
-
-.attempts-info {
-    margin-bottom: 20px;
-    text-align: center;
-    color: var(--text-secondary-color);
-    font-family: var(--font-family-main);
-    font-size: 14px;
-    font-weight: 300;
-    line-height: 18px;
-}
-
-.attempts-options {
-    margin-top: 8px;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-}
-
-.secondary-button {
-    display: flex;
-    padding: 10px 16px;
-    justify-content: center;
-    align-items: center;
-    border-radius: var(--border-radius-main);
-    border: 1px solid var(--text-secondary-color);
-    background: transparent;
+.daily-login-container {
+    padding: 20px;
+    background-color: var(--app-bg-color);
     color: var(--text-primary-color);
-    font-family: var(--font-family-main);
+}
+
+.daily-login-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.progress-bar {
+    margin-bottom: 20px;
+}
+
+.progress-bar-container {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-main);
+    height: 10px;
+    margin-bottom: 10px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--accent-yellow-color);
+    border-radius: var(--border-radius-main);
+    transition: width var(--transition-duration) var(--transition-timing-function);
+}
+
+#progressText {
+    text-align: center;
     font-size: 14px;
-    font-weight: 400;
-    line-height: 18px;
-    cursor: pointer;
-    transition: background-color var(--transition-duration) var(--transition-timing-function),
-                transform var(--transition-transform-duration) var(--transition-timing-function);
-}
-
-.secondary-button:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.03);
-}
-
-.secondary-button:active {
-    transform: scale(0.98);
+    color: var(--text-secondary-color);
+    font-weight: 300;
 }
 
 .match-list {
@@ -607,64 +559,126 @@ nav button.nav-button.active {
 }
 
 .match-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background-color: var(--express-card-bg-color);
     padding: 12px;
     border-radius: var(--border-radius-main);
-    border: 1px solid var(--express-card-border-color);
-    background: var(--express-card-bg-color);
-    cursor: pointer;
-    transition: background-color var(--transition-duration) var(--transition-timing-function);
+    border: 0.5px solid var(--express-card-border-color);
 }
 
-.match-item:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.match-item.selected {
-    border-color: var(--accent-yellow-color);
-    background: rgba(255, 228, 51, 0.1);
-}
-
-.match-item .match-teams {
-    color: var(--text-primary-color);
-    font-family: var(--font-family-main);
+.match-item h3 {
     font-size: 16px;
     font-weight: 300;
-    line-height: 22px;
-    flex-grow: 1;
-}
-
-.match-item .match-type {
-    color: var(--text-secondary-color);
-    font-family: var(--font-family-main);
-    font-size: 12px;
-    font-weight: 200;
-    line-height: 16px;
-    margin-left: 8px;
-}
-
-.daily-match-title {
-    color: var(--text-primary-color);
-    font-family: var(--font-family-main);
-    font-size: 16px;
-    font-weight: 300;
-    line-height: 22px;
+    margin: 0 0 10px;
     text-align: center;
-    margin-bottom: 8px;
 }
 
-.daily-match-title #dailyMatchTeams { font-weight: 500; }
+.match-item .options {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 10px;
+}
 
-.tab-button.prediction-choice-tab:disabled {
-    background: rgba(255, 255, 255, 0.1); 
-    color: rgba(255, 255, 255, 0.4);
+.match-item button {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary-color);
+    border: 1px solid var(--text-secondary-color);
+    padding: 8px 16px;
+    border-radius: var(--border-radius-main);
+    cursor: pointer;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-weight: 300;
+    transition: background-color var(--transition-duration) var(--transition-timing-function),
+                color var(--transition-duration) var(--transition-timing-function),
+                transform var(--transition-transform-duration) var(--transition-timing-function);
+}
+
+.match-item button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.03);
+}
+
+.match-item button.selected {
+    background-color: var(--accent-yellow-color);
+    color: var(--text-dark-color);
+    border-color: var(--accent-yellow-color);
+}
+
+.match-item button:disabled {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-tertiary-color);
     cursor: not-allowed;
-    transform: none;
+    border-color: var(--text-tertiary-color);
 }
 
-.tab-button.prediction-choice-tab:disabled:hover { opacity: 1; }
+.match-item .confirm-button {
+    background-color: var(--accent-yellow-color);
+    color: var(--text-dark-color);
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-main);
+    cursor: pointer;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+    transition: background-color var(--transition-duration) var(--transition-timing-function),
+                transform var(--transition-transform-duration) var(--transition-timing-function);
+}
+
+.match-item .confirm-button:hover {
+    background-color: #edd62f;
+    transform: scale(1.03);
+}
+
+.match-item .confirm-button:disabled {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-tertiary-color);
+    cursor: not-allowed;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.action-button {
+    background-color: var(--accent-yellow-color);
+    color: var(--text-dark-color);
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--border-radius-main);
+    cursor: pointer;
+    font-family: var(--font-family-main);
+    font-size: 16px;
+    font-weight: 500;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background-color var(--transition-duration) var(--transition-timing-function),
+                transform var(--transition-transform-duration) var(--transition-timing-function);
+}
+
+.action-button:hover {
+    background-color: #edd62f;
+    transform: scale(1.03);
+}
+
+.action-button:active {
+    transform: scale(0.98);
+}
+
+.reward-message {
+    margin-top: 10px;
+    text-align: center;
+    color: var(--accent-yellow-color);
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    font-weight: 300;
+}
 
 /* --- Повідомлення --- */
 .bet-confirmation .info-message.bet-placed-style,
@@ -768,106 +782,4 @@ nav button.nav-button.active {
 
 .hidden {
     display: none !important;
-}
-
-.daily-login-container {
-    padding: 20px;
-    background-color: #1a1a1a;
-    color: #fff;
-}
-
-.progress-bar {
-    margin-bottom: 20px;
-}
-
-.progress-circles {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.progress-circle {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: #333;
-    border: 2px solid #555;
-}
-
-.progress-circle.filled {
-    background-color: #ffcc00;
-    border-color: #ffcc00;
-}
-
-#progressText {
-    text-align: center;
-    font-size: 14px;
-    color: #ccc;
-}
-
-.match-list {
-    margin-bottom: 20px;
-}
-
-.match-item {
-    background-color: #222;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
-
-.match-item h3 {
-    font-size: 16px;
-    margin: 0 0 10px;
-}
-
-.match-item .options {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.match-item button {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.match-item button:hover {
-    background-color: #ffcc00;
-    color: #000;
-}
-
-.match-item button.selected {
-    background-color: #ffcc00;
-    color: #000;
-}
-
-.action-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.share-button {
-    background-color: #ffcc00;
-    color: #000;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.share-button:hover {
-    background-color: #e6b800;
-}
-
-.reward-message {
-    margin-top: 10px;
-    text-align: center;
-    color: #ffcc00;
 }
