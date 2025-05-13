@@ -1,8 +1,7 @@
 <div class="match-of-the-day-container">
-    <h2 class="page-title">Матч дня</h2>
+    <h3 id="motdTeams" class="teams"></h3>
     <p class="page-title-date" id="motdDate"></p>
     <div class="match-details">
-        <h3 id="motdTeams"></h3>
         <p id="motdLeague"></p>
         <p id="motdDateTime"></p>
         <div class="odds-container">
@@ -24,11 +23,12 @@
         </div>
     </div>
     <div id="motdStakeOptionsArea">
-        <p>Виберіть результат для прогнозу:</p>
+        <p>Виберіть суму ставки:</p>
         <div class="stake-tabs-container">
-            <button class="tab-button prediction-choice-tab" id="predictTeam1">Перемога 1</button>
-            <button class="tab-button prediction-choice-tab" id="predictDraw">Нічия</button>
-            <button class="tab-button prediction-choice-tab" id="predictTeam2">Перемога 2</button>
+            <button class="tab-button stake-tab" id="stake100">100 грн</button>
+            <button class="tab-button stake-tab" id="stake200">200 грн</button>
+            <button class="tab-button stake-tab" id="stake500">500 грн</button>
+            <button class="tab-button stake-tab" id="stakeFreeBet">FreeBet</button>
         </div>
     </div>
     <div class="place-bet-button-container">

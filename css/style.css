@@ -45,11 +45,11 @@
     /* Paddings */
     --padding-button-deposit: 10px 20px; 
     --padding-nav-tab: 10px 8px; 
-    --padding-tab-interactive: 12px 6px; 
+    --padding-tab-interactive: 8px 4px; /* Зменшено для сучаснішого вигляду */
     --padding-message-block: 12px;
     --padding-express-card: 16px 12px;
 
-    /* Анімації */
+    /* Анітації */
     --transition-duration: 0.2s;
     --transition-timing-function: ease-in-out;
     --transition-transform-duration: 0.15s; 
@@ -249,30 +249,30 @@ nav button.nav-button.active {
     align-self: stretch;
     text-align: center;
     font-family: var(--font-family-main);
-    font-size: 14px;
+    font-size: 12px; /* Зменшено розмір тексту */
     font-style: normal;
     font-weight: 300;
-    line-height: 16px; 
+    line-height: 14px; /* Зменшено висоту рядка */
 }
 
 .tab-button .odd-value { 
     align-self: stretch;
     text-align: center;
     font-family: var(--font-family-main);
-    font-size: 18px;
+    font-size: 14px; /* Зменшено розмір тексту */
     font-style: normal;
     font-weight: 500;
-    line-height: 22px; 
+    line-height: 16px; /* Зменшено висоту рядка */
 }
 
 .tab-button .odd-coefficient { 
     align-self: stretch;
     text-align: center;
     font-family: var(--font-family-main);
-    font-size: 12px;
+    font-size: 10px; /* Зменшено розмір тексту */
     font-style: normal;
     font-weight: 300;
-    line-height: 16px;
+    line-height: 12px; /* Зменшено висоту рядка */
     color: var(--text-secondary-color);
 }
 
@@ -280,12 +280,12 @@ nav button.nav-button.active {
 .tab-button.freebet-tab-single,
 .tab-button.prediction-choice-tab { 
     font-family: var(--font-family-main);
-    font-size: 18px; 
+    font-size: 14px; /* Зменшено розмір тексту */
     font-style: normal;
     font-weight: 500;
-    line-height: 22px;
-    padding-top: 16px;
-    padding-bottom: 16px; 
+    line-height: 16px; /* Зменшено висоту рядка */
+    padding-top: 10px; /* Зменшено відступи */
+    padding-bottom: 10px; 
 }
 
 .tab-button.freebet-tab-single {

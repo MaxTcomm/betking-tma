@@ -6,22 +6,28 @@ tgM.expand();
 // Ініціалізація змінних
 let matchData = null;
 let selectedPrediction = null;
+let selectedStake = null;
 let predictionMade = false;
+let userBalance = 1000; // Імітація балансу користувача для MVP (1000 грн)
 
 document.addEventListener('DOMContentLoaded', async () => {
     const motdDate = document.getElementById('motdDate');
     const motdTeams = document.getElementById('motdTeams');
     const motdLeague = document.getElementById('motdLeague');
     const motdDateTime = document.getElementById('motdDateTime');
+    const oddTeam1 = document.getElementById('oddTeam1');
+    const oddDraw = document.getElementById('oddDraw');
+    const oddTeam2 = document.getElementById('oddTeam2');
     const oddTeam1Value = document.getElementById('oddTeam1Value');
     const oddDrawValue = document.getElementById('oddDrawValue');
     const oddTeam2Value = document.getElementById('oddTeam2Value');
     const oddTeam1Coefficient = document.getElementById('oddTeam1Coefficient');
     const oddDrawCoefficient = document.getElementById('oddDrawCoefficient');
     const oddTeam2Coefficient = document.getElementById('oddTeam2Coefficient');
-    const predictTeam1 = document.getElementById('predictTeam1');
-    const predictDraw = document.getElementById('predictDraw');
-    const predictTeam2 = document.getElementById('predictTeam2');
+    const stake100 = document.getElementById('stake100');
+    const stake200 = document.getElementById('stake200');
+    const stake500 = document.getElementById('stake500');
+    const stakeFreeBet = document.getElementById('stakeFreeBet');
     const placePredictionButton = document.getElementById('placePredictionButton');
     const motdPredictionResult = document.getElementById('motdPredictionResult');
 
@@ -52,8 +58,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Приховуємо кнопку "Нічия", якщо матч із кіберспорту (без нічиєї)
             if (matchData.odds.draw === "0%") {
-                document.getElementById('oddDraw').style.display = 'none';
-                predictDraw.style.display = 'none';
+                oddDraw.style.display = 'none';
+                document.getElementById('predictDraw').style.display = 'none';
             }
         } else {
             motdTeams.textContent = "Дані недоступні";
@@ -68,31 +74,72 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Вибір прогнозу
-    predictTeam1.addEventListener('click', () => {
+    // Вибір коефіцієнта
+    oddTeam1.addEventListener('click', () => {
         if (!predictionMade) {
-            predictTeam1.classList.add('active');
-            predictDraw.classList.remove('active');
-            predictTeam2.classList.remove('active');
+            oddTeam1.classList.add('active');
+            oddDraw.classList.remove('active');
+            oddTeam2.classList.remove('active');
             selectedPrediction = 'team1';
         }
     });
 
-    predictDraw.addEventListener('click', () => {
+    oddDraw.addEventListener('click', () => {
         if (!predictionMade) {
-            predictTeam1.classList.remove('active');
-            predictDraw.classList.add('active');
-            predictTeam2.classList.remove('active');
+            oddTeam1.classList.remove('active');
+            oddDraw.classList.add('active');
+            oddTeam2.classList.remove('active');
             selectedPrediction = 'draw';
         }
     });
 
-    predictTeam2.addEventListener('click', () => {
+    oddTeam2.addEventListener('click', () => {
         if (!predictionMade) {
-            predictTeam1.classList.remove('active');
-            predictDraw.classList.remove('active');
-            predictTeam2.classList.add('active');
+            oddTeam1.classList.remove('active');
+            oddDraw.classList.remove('active');
+            oddTeam2.classList.add('active');
             selectedPrediction = 'team2';
+        }
+    });
+
+    // Вибір суми ставки
+    stake100.addEventListener('click', () => {
+        if (!predictionMade) {
+            stake100.classList.add('active');
+            stake200.classList.remove('active');
+            stake500.classList.remove('active');
+            stakeFreeBet.classList.remove('active');
+            selectedStake = 100;
+        }
+    });
+
+    stake200.addEventListener('click', () => {
+        if (!predictionMade) {
+            stake100.classList.remove('active');
+            stake200.classList.add('active');
+            stake500.classList.remove('active');
+            stakeFreeBet.classList.remove('active');
+            selectedStake = 200;
+        }
+    });
+
+    stake500.addEventListener('click', () => {
+        if (!predictionMade) {
+            stake100.classList.remove('active');
+            stake200.classList.remove('active');
+            stake500.classList.add('active');
+            stakeFreeBet.classList.remove('active');
+            selectedStake = 500;
+        }
+    });
+
+    stakeFreeBet.addEventListener('click', () => {
+        if (!predictionMade) {
+            stake100.classList.remove('active');
+            stake200.classList.remove('active');
+            stake500.classList.remove('active');
+            stakeFreeBet.classList.add('active');
+            selectedStake = 'freebet';
         }
     });
 
@@ -103,9 +150,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
+        if (!selectedStake) {
+            tgM.showAlert('Спочатку виберіть суму ставки!');
+            return;
+        }
+
         if (predictionMade) {
             tgM.showAlert('Ви вже зробили прогноз на цей матч!');
             return;
+        }
+
+        // Імітація списання з балансу
+        if (selectedStake !== 'freebet') {
+            if (userBalance >= selectedStake) {
+                userBalance -= selectedStake;
+                motdPredictionResult.innerHTML = `<div class="info-message success">Прогноз успішно зроблено! З вашого балансу списано ${selectedStake} грн. Новий баланс: ${userBalance} грн.</div>`;
+            } else {
+                motdPredictionResult.innerHTML = `<div class="info-message error">Недостатньо коштів на балансі! Ваш баланс: ${userBalance} грн.</div>`;
+                return;
+            }
+        } else {
+            motdPredictionResult.innerHTML = '<div class="info-message success">Прогноз успішно зроблено з використанням FreeBet!</div>';
         }
 
         // Імітація результату матчу (для демо)
@@ -113,15 +178,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         const actualResult = possibleResults[Math.floor(Math.random() * possibleResults.length)];
 
         if (selectedPrediction === actualResult) {
-            motdPredictionResult.innerHTML = '<div class="info-message success">Вітаємо! Ви вгадали результат матчу!</div>';
+            setTimeout(() => {
+                motdPredictionResult.innerHTML += '<div class="info-message success">Вітаємо! Ви вгадали результат матчу!</div>';
+            }, 1000);
         } else {
-            motdPredictionResult.innerHTML = '<div class="info-message error">На жаль, ви не вгадали результат. Спробуйте ще раз завтра!</div>';
+            setTimeout(() => {
+                motdPredictionResult.innerHTML += '<div class="info-message error">На жаль, ви не вгадали результат. Спробуйте ще раз завтра!</div>';
+            }, 1000);
         }
 
         predictionMade = true;
-        predictTeam1.disabled = true;
-        predictDraw.disabled = true;
-        predictTeam2.disabled = true;
+        oddTeam1.disabled = true;
+        oddDraw.disabled = true;
+        oddTeam2.disabled = true;
+        stake100.disabled = true;
+        stake200.disabled = true;
+        stake500.disabled = true;
+        stakeFreeBet.disabled = true;
         placePredictionButton.disabled = true;
     });
 
