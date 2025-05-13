@@ -1,209 +1,122 @@
-(function() {
-    const motdContent = document.getElementById('matchOfTheDayContent');
-    if (!motdContent) { return; }
+const tgM = window.Telegram.WebApp;
 
-    if (typeof window.isUserCurrentlyLoggedIn !== 'function' || !window.isUserCurrentlyLoggedIn()) {
-        window.showNotLoggedInMessage(motdContent);
-        return; 
+tgM.ready();
+tgM.expand();
+
+// Ініціалізація змінних
+let matchData = null;
+let selectedPrediction = null;
+let predictionMade = false;
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const motdDate = document.getElementById('motdDate');
+    const motdTeams = document.getElementById('motdTeams');
+    const motdLeague = document.getElementById('motdLeague');
+    const motdDateTime = document.getElementById('motdDateTime');
+    const oddTeam1Value = document.getElementById('oddTeam1Value');
+    const oddDrawValue = document.getElementById('oddDrawValue');
+    const oddTeam2Value = document.getElementById('oddTeam2Value');
+    const predictTeam1 = document.getElementById('predictTeam1');
+    const predictDraw = document.getElementById('predictDraw');
+    const predictTeam2 = document.getElementById('predictTeam2');
+    const placePredictionButton = document.getElementById('placePredictionButton');
+    const motdPredictionResult = document.getElementById('motdPredictionResult');
+
+    // Завантаження даних Матчу дня
+    async function loadMatchData() {
+        try {
+            const response = await fetch('/match-of-the-day.json'); // Припустимо, що ваш сервер повертає JSON
+            matchData = await response.json();
+        } catch (error) {
+            console.error('Помилка завантаження даних Матчу дня:', error);
+            matchData = null;
+        }
     }
 
-    const tgM = window.Telegram.WebApp;
-    const updateBalanceDisplay = window.updateBalanceDisplay;
-    const currentBalances = window.currentBalances;
-    const confetti = window.confetti;
+    // Відображення даних Матчу дня
+    function displayMatchData() {
+        if (matchData) {
+            motdDate.textContent = new Date(matchData.lastUpdated).toLocaleDateString('uk-UA', { day: 'numeric', month: 'long' });
+            motdTeams.textContent = matchData.teams;
+            motdLeague.textContent = matchData.league;
+            motdDateTime.textContent = matchData.dateTime;
+            oddTeam1Value.textContent = matchData.odds.team1;
+            oddDrawValue.textContent = matchData.odds.draw;
+            oddTeam2Value.textContent = matchData.odds.team2;
 
-    const matchOfTheDayData = {
-        titlePrefix: "Матч дня",
-        team1: "Динамо Київ",
-        team2: "Шахтар Донецьк",
-        date: "12 червня 2025, 19:00",
-        odds: {
-            p1: { name: "П1", value: 2.50, description: "Перемога Динамо Київ" },
-            x:  { name: "X", value: 3.20, description: "Нічия" },
-            p2: { name: "П2", value: 2.80, description: "Перемога Шахтар Донецьк" }
-        },
-        stakeAmounts: [100, 200, 500]
-    };
-    let motdSelectedOdd = null;
-    let motdSelectedStakeTypeOrAmount = null; 
-
-    const motdTitleDateEl = motdContent.querySelector('#motdTitleDate');
-    const motdTeamsEl = motdContent.querySelector('#motdTeams');
-    const motdOddsContainerEl = motdContent.querySelector('#motdOddsContainer');
-    const motdStakeOptionsAreaEl = motdContent.querySelector('#motdStakeOptionsArea');
-    const motdStakeTitleEl = motdContent.querySelector('#motdStakeTitle');
-    const motdStakeTabsSumContainerEl = motdContent.querySelector('#motdStakeTabsSumContainer');
-    const motdFreebetButtonContainerSingleEl = motdContent.querySelector('#motdFreebetButtonContainerSingle');
-    const motdPlaceBetButtonContainerEl = motdContent.querySelector('#motdPlaceBetButtonContainer');
-    const motdExecuteBetButtonEl = motdPlaceBetButtonContainerEl ? motdPlaceBetButtonContainerEl.querySelector('#motdExecuteBetButton') : null;
-    const motdBetConfirmationEl = motdContent.querySelector('#motdBetConfirmation');
-
-    function redirectToLogin() {
-        tgM.showConfirm("Для цієї дії потрібно увійти або зареєструватися. Перейти на сайт BetKing?", (confirmed) => {
-            if (confirmed) {
-                tgM.showAlert("Імітація переходу на сайт для входу/реєстрації...");
+            // Приховуємо кнопку "Нічия", якщо матч із кіберспорту (без нічиєї)
+            if (matchData.odds.draw === "0%") {
+                document.getElementById('oddDraw').style.display = 'none';
+                predictDraw.style.display = 'none';
             }
-        });
-    }
-
-    function displayMatchOfTheDay() {
-        if (!motdTitleDateEl || !motdTeamsEl || !motdOddsContainerEl) { return; }
-        if (matchOfTheDayData.titlePrefix && matchOfTheDayData.date) {
-            motdTitleDateEl.textContent = `${matchOfTheDayData.titlePrefix} • ${matchOfTheDayData.date}`;
         } else {
-            motdTitleDateEl.textContent = "Матч дня"; 
-            console.warn("MOTD: titlePrefix or date is missing for title.");
-        }
-        motdTeamsEl.textContent = `${matchOfTheDayData.team1} - ${matchOfTheDayData.team2}`;
-        
-        motdOddsContainerEl.innerHTML = ''; 
-        for (const key in matchOfTheDayData.odds) {
-            const odd = matchOfTheDayData.odds[key];
-            const button = document.createElement('button');
-            button.className = 'tab-button'; 
-            button.dataset.key = key; 
-            button.innerHTML = `<span class="odd-name">${odd.name}</span><span class="odd-value">${odd.value.toFixed(2)}</span>`;
-            button.addEventListener('click', handleMotdOddSelection); 
-            motdOddsContainerEl.appendChild(button); 
-        }
-        if (motdStakeOptionsAreaEl) motdStakeOptionsAreaEl.classList.add('hidden');
-        if (motdPlaceBetButtonContainerEl) motdPlaceBetButtonContainerEl.classList.add('hidden');
-        if (motdBetConfirmationEl) motdBetConfirmationEl.innerHTML = '';
-    }
-
-    function handleMotdOddSelection(event) {
-        if (typeof window.isUserCurrentlyLoggedIn === 'function' && !window.isUserCurrentlyLoggedIn()) {
-            redirectToLogin();
-            return;
-        }
-        motdOddsContainerEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        const oddKey = event.currentTarget.dataset.key; 
-        motdSelectedOdd = matchOfTheDayData.odds[oddKey]; 
-        motdSelectedStakeTypeOrAmount = null; 
-        if (motdPlaceBetButtonContainerEl) motdPlaceBetButtonContainerEl.classList.add('hidden');
-        if (motdBetConfirmationEl) motdBetConfirmationEl.innerHTML = ''; 
-        if (motdStakeOptionsAreaEl) motdStakeOptionsAreaEl.classList.remove('hidden');
-        if (motdStakeTitleEl) {
-            motdStakeTitleEl.textContent = "Обери суму ставки для Матчу дня:";
-            motdStakeTitleEl.classList.remove('hidden');
-        }
-        if (motdStakeTabsSumContainerEl) {
-            motdStakeTabsSumContainerEl.innerHTML = ''; 
-            matchOfTheDayData.stakeAmounts.forEach(amount => {
-                const stakeTab = document.createElement('button');
-                stakeTab.className = 'tab-button stake-tab'; 
-                stakeTab.dataset.amount = amount; 
-                stakeTab.textContent = `${amount} ₴`; 
-                stakeTab.addEventListener('click', handleStakeSelection); 
-                motdStakeTabsSumContainerEl.appendChild(stakeTab); 
-            });
-        }
-        if (motdFreebetButtonContainerSingleEl) {
-            motdFreebetButtonContainerSingleEl.innerHTML = ''; 
-            if (currentBalances.freebets > 0 && currentBalances.freebetAmount > 0) {
-                const freebetButton = document.createElement('button');
-                freebetButton.className = 'tab-button freebet-tab-single'; 
-                freebetButton.dataset.amount = 'freebet'; 
-                freebetButton.textContent = `Фрібет на ${currentBalances.freebetAmount.toFixed(0)} ₴`; 
-                freebetButton.addEventListener('click', handleStakeSelection); 
-                motdFreebetButtonContainerSingleEl.appendChild(freebetButton); 
-            }
+            motdTeams.textContent = "Дані недоступні";
+            motdLeague.textContent = "";
+            motdDateTime.textContent = "";
+            oddTeam1Value.textContent = "";
+            oddDrawValue.textContent = "";
+            oddTeam2Value.textContent = "";
         }
     }
 
-    function handleStakeSelection(event) {
-        motdSelectedStakeTypeOrAmount = event.currentTarget.dataset.amount;
-        if (motdStakeTabsSumContainerEl) motdStakeTabsSumContainerEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        if (motdFreebetButtonContainerSingleEl) motdFreebetButtonContainerSingleEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        if (motdPlaceBetButtonContainerEl) motdPlaceBetButtonContainerEl.classList.remove('hidden');
-    }
-
-    function executeBetPlacement() {
-        if (motdBetConfirmationEl) motdBetConfirmationEl.innerHTML = '';
-
-        if (!motdSelectedOdd) {
-            tgM.showAlert('Будь ласка, оберіть коефіцієнт!'); 
-            return;
+    // Вибір прогнозу
+    predictTeam1.addEventListener('click', () => {
+        if (!predictionMade) {
+            predictTeam1.classList.add('active');
+            predictDraw.classList.remove('active');
+            predictTeam2.classList.remove('active');
+            selectedPrediction = 'team1';
         }
-        if (!motdSelectedStakeTypeOrAmount) {
-            tgM.showAlert('Будь ласка, оберіть суму ставки або фрібет!'); 
+    });
+
+    predictDraw.addEventListener('click', () => {
+        if (!predictionMade) {
+            predictTeam1.classList.remove('active');
+            predictDraw.classList.add('active');
+            predictTeam2.classList.remove('active');
+            selectedPrediction = 'draw';
+        }
+    });
+
+    predictTeam2.addEventListener('click', () => {
+        if (!predictionMade) {
+            predictTeam1.classList.remove('active');
+            predictDraw.classList.remove('active');
+            predictTeam2.classList.add('active');
+            selectedPrediction = 'team2';
+        }
+    });
+
+    // Підтвердження прогнозу
+    placePredictionButton.addEventListener('click', () => {
+        if (!selectedPrediction) {
+            tgM.showAlert('Спочатку виберіть результат матчу!');
             return;
         }
 
-        let stakeAmountForCalc = 0; 
-        let messageTitle = "";
-        let messageDetails = "";
-        let betMade = false;
-        let insufficientFunds = false;
-
-        if (motdSelectedStakeTypeOrAmount === 'freebet') { 
-            if (currentBalances.freebets > 0 && currentBalances.freebetAmount > 0) {
-                currentBalances.freebets--;
-                stakeAmountForCalc = currentBalances.freebetAmount;
-                messageTitle = `Матч дня: Ставка Фрібетом (${stakeAmountForCalc.toFixed(0)} ₴)`;
-                messageDetails = `Твою ставку на “${motdSelectedOdd.description}” (${motdSelectedOdd.name} @${motdSelectedOdd.value.toFixed(2)}) прийнято (MVP). Виграш з фрібету буде зараховано на основний баланс.`;
-                betMade = true;
-            } else { 
-                tgM.showAlert('У вас немає доступних фрібетів.'); 
-                return; 
-            }
-        } else { 
-            const numericAmount = parseInt(motdSelectedStakeTypeOrAmount);
-            if (currentBalances.main >= numericAmount) { 
-                currentBalances.main -= numericAmount;
-                stakeAmountForCalc = numericAmount;
-                messageTitle = `Матч дня: Ставка ${numericAmount} ₴`;
-                const potentialWin = (stakeAmountForCalc * motdSelectedOdd.value).toFixed(2);
-                messageDetails = `Твою ставку на “${motdSelectedOdd.description}” (${motdSelectedOdd.name} @${motdSelectedOdd.value.toFixed(2)}) прийнято (MVP). Можливий виграш: ${potentialWin} ₴.`;
-                betMade = true;
-            } else if (currentBalances.bonus >= numericAmount) { 
-                currentBalances.bonus -= numericAmount;
-                stakeAmountForCalc = numericAmount;
-                messageTitle = `Матч дня: Ставка ${numericAmount} ₴ (з бонусного балансу)`;
-                const potentialWin = (stakeAmountForCalc * motdSelectedOdd.value).toFixed(2);
-                messageDetails = `Твою ставку на “${motdSelectedOdd.description}” (${motdSelectedOdd.name} @${motdSelectedOdd.value.toFixed(2)}) прийнято (MVP) з бонусного балансу. Можливий виграш: ${potentialWin} ₴.`;
-                betMade = true;
-            } else { 
-                insufficientFunds = true; 
-            }
+        if (predictionMade) {
+            tgM.showAlert('Ви вже зробили прогноз на цей матч!');
+            return;
         }
 
-        if (insufficientFunds) {
-            tgM.showConfirm("Недостатньо коштів. Зробити депозит?", (confirmed) => {
-                if (confirmed) {
-                    console.log("User wants to deposit (MOTD simulation)");
-                    tgM.showAlert("Функція депозиту в розробці."); 
-                }
-            });
-            return; 
+        // Імітація результату матчу (для демо)
+        const possibleResults = matchData.odds.draw === "0%" ? ['team1', 'team2'] : ['team1', 'draw', 'team2'];
+        const actualResult = possibleResults[Math.floor(Math.random() * possibleResults.length)];
+
+        if (selectedPrediction === actualResult) {
+            motdPredictionResult.innerHTML = '<div class="info-message success">Вітаємо! Ви вгадали результат матчу!</div>';
+        } else {
+            motdPredictionResult.innerHTML = '<div class="info-message error">На жаль, ви не вгадали результат. Спробуйте ще раз завтра!</div>';
         }
 
-        if (betMade) { 
-            if (typeof updateBalanceDisplay === 'function') { updateBalanceDisplay(); }
-            if (motdBetConfirmationEl) {
-                motdBetConfirmationEl.innerHTML = `
-                    <div class="info-message bet-placed-style"> 
-                        <span class="message-title">${messageTitle}</span>
-                        <span class="message-details">${messageDetails.replace(/\n/g, "<br>")}</span>
-                    </div>`;
-            }
-            tgM.HapticFeedback.notificationOccurred('success'); 
-            if (confetti) { confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, zIndex: 10000 }); }
+        predictionMade = true;
+        predictTeam1.disabled = true;
+        predictDraw.disabled = true;
+        predictTeam2.disabled = true;
+        placePredictionButton.disabled = true;
+    });
 
-            if (motdPlaceBetButtonContainerEl) motdPlaceBetButtonContainerEl.classList.add('hidden');
-            if (motdStakeTabsSumContainerEl) motdStakeTabsSumContainerEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            if (motdFreebetButtonContainerSingleEl) motdFreebetButtonContainerSingleEl.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            motdSelectedStakeTypeOrAmount = null;
-        }
-    }
-    
-    if (motdExecuteBetButtonEl) {
-        motdExecuteBetButtonEl.addEventListener('click', () => {
-            window.disableButtonDuringAction(motdExecuteBetButtonEl, executeBetPlacement);
-        });
-    }
-    
-    displayMatchOfTheDay(); 
-})();
+    // Ініціалізація
+    await loadMatchData();
+    displayMatchData();
+});

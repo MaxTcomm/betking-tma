@@ -1,20 +1,35 @@
-<div id="matchOfTheDayContent">
-    <div id="motdTitleDate" class="page-title-date"></div>
-    <div id="motdTeams" class="teams"></div>
-
-    <div id="motdOddsContainer" class="odds-container"></div>
-
-    <div id="motdStakeOptionsArea" class="hidden"> 
-        <p id="motdStakeTitle" class="hidden">Обери суму ставки для Матчу дня:</p>
-        
-        <div id="motdStakeTabsSumContainer" class="stake-tabs-container"></div>
-        
-        <div id="motdFreebetButtonContainerSingle" class="freebet-button-container-single"></div>
-        
-        <div id="motdPlaceBetButtonContainer" class="place-bet-button-container hidden">
-            <button id="motdExecuteBetButton" class="place-bet-button">Зробити ставку</button>
+<div class="match-of-the-day-container">
+    <h2 class="page-title">Матч дня</h2>
+    <p class="page-title-date" id="motdDate"></p>
+    <div class="match-details">
+        <h3 id="motdTeams"></h3>
+        <p id="motdLeague"></p>
+        <p id="motdDateTime"></p>
+        <div class="odds-container">
+            <button class="tab-button odd-tab" id="oddTeam1">
+                <span class="odd-name">Перемога 1</span>
+                <span class="odd-value" id="oddTeam1Value"></span>
+            </button>
+            <button class="tab-button odd-tab" id="oddDraw">
+                <span class="odd-name">Нічия</span>
+                <span class="odd-value" id="oddDrawValue"></span>
+            </button>
+            <button class="tab-button odd-tab" id="oddTeam2">
+                <span class="odd-name">Перемога 2</span>
+                <span class="odd-value" id="oddTeam2Value"></span>
+            </button>
         </div>
     </div>
-
-    <div id="motdBetConfirmation" class="bet-confirmation"></div>
+    <div id="motdStakeOptionsArea">
+        <p>Виберіть результат для прогнозу:</p>
+        <div class="stake-tabs-container">
+            <button class="tab-button prediction-choice-tab" id="predictTeam1">Перемога 1</button>
+            <button class="tab-button prediction-choice-tab" id="predictDraw">Нічия</button>
+            <button class="tab-button prediction-choice-tab" id="predictTeam2">Перемога 2</button>
+        </div>
+    </div>
+    <div class="place-bet-button-container">
+        <button class="place-bet-button" id="placePredictionButton">Підтвердити прогноз</button>
+    </div>
+    <div class="bet-confirmation" id="motdPredictionResult"></div>
 </div>
